@@ -22,7 +22,7 @@ class Action:
     conditions = None
     
     # Whether action is on by default
-    default = True
+    default = False
     
     """
     Helper function which loads all the classes in this module,
