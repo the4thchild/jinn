@@ -1,4 +1,5 @@
 import sys
+import os
 import options
 
 from manifest.Manifest import Manifest
@@ -15,6 +16,10 @@ class Jinn:
     Runs the default action in the jinn
     """
     def runDefaultAction(self):
+        if not self.isInstalled():
+            print "Cannot run default action, this jinn is not installed"
+            return 1
+        
         print "Default action"
         return 0
     
@@ -22,6 +27,10 @@ class Jinn:
     Runs a specific action within the jinn
     """
     def runAction(self, action):
+        if not self.isInstalled():
+            print "Cannot run action %s, this jinn is not installed" % action
+            return 1
+            
         print "Run action %s" % action
         return 0
     
@@ -29,8 +38,30 @@ class Jinn:
     Runs an installation of this jinn
     """
     def doInstall(self):
-        print "Install"
+        if self.isInstalled():
+            print "This jinn is already installed"
+            return 1
+        
+        print "Installing"
         return 0
+    
+    """
+    Runs uninstallation
+    """
+    def doUninstall(self):
+        if not self.isInstalled():
+            print "This jinn is not installed, so cannot be uninstalled"
+            return 1
+        
+        # TODO: Uninstallation
+        print "Uninstall not implemented yet"
+        return 1
+    
+    """
+    Check whether or not this jinn is currently installed
+    """
+    def isInstalled(self):
+        return os.path.isdir(".jinn")
     
     """
     Output the help content
@@ -55,13 +86,15 @@ Created by import.io
         
 Options:
     ./jinn
-        Run with the default action
+        Run the jinn with the default action
     ./jinn -install
-        Run the installation
+        Run the jinn installation
+    ./jinn -uninstall
+        Uninstall the jinn
     ./jinn -help
-        Display this help dialog
+        Display this helpful help dialog
     ./jinn -action (actionname)
-        Run the action specified by (actionname)
+        Run the jinn action specified by (actionname)
         """
         return 0
     
@@ -75,6 +108,8 @@ Options:
             return self.runDefaultAction()
         elif sys.argv[1] == "-install":
             return self.doInstall()
+        elif sys.argv[1] == "-uninstall":
+            return self.doUninstall()
         elif sys.argv[1] == "-help":
             return self.doHelp()
         elif sys.argv[1] == "-action":
@@ -99,4 +134,5 @@ def main():
 
 if __name__ == '__main__':
     status = main()
+    print "Jinn exiting with code %s" % str(status)
     sys.exit(status)
