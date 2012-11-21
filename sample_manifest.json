@@ -1,0 +1,58 @@
+{
+	"Jinn": {
+        "Version" : "XXX",
+        "Source"  : "http://blah.com/1.1/jinn.zip",
+        "Updater" : "http://blah.com/1.1/jinn-updater.exe"
+    },
+	"Description": "A sample manifest file for Jinn",
+	"Resources": {
+	
+		"MyJar": {
+			"Type": "Jinn::Resource::Jar",
+			"Description": "Jar to load",
+			"Properties": {
+				"Source": {
+					"Platform": {
+						"win": {
+							"32": "derp",
+							"64": "herp"
+						}
+					}
+				},
+				"Compression": "pack200",
+				"Path": "derp/herp"
+			},
+			"Conditions": {
+				"Platform": "win",
+				"Architecture": ["32", "64"]
+			},
+			"Version": "1.0.0"
+		},
+		
+		"MyJre": {
+			"Type": "Jinn::Resource::Jre",
+			"Description": "JRE to load",
+			"Properties": {
+				"Source": "",
+				"Compression": "pack200",
+				"Path": "derp/herp"
+			},
+			"Conditions": {
+				"Platform": "win",
+				"Architecture": "32"
+			},
+			"Version": "2.0.0"
+		}
+	},
+	"Actions": {
+		"ActionName": {
+			"Type": "Jinn::Action::RunJar",
+			"Description": "Run the program",
+			"Properties": {
+				"Jre": { "Ref": "MyJre" },
+				"Jar": { "Ref": "MyJar" },
+				"Args": "-Xmx 1g"
+			}
+		}
+	}
+}
