@@ -1,8 +1,6 @@
+from ResourceBase import ResourceBase
 
-class ActiveXResource:
+class ActiveXResource(ResourceBase):
 
     def getType(self):
         return "Jinn::Resource::ActiveXResource"
-    
-    def loadProperties(self, properties):
-        print properties

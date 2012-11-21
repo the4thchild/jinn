@@ -1,8 +1,6 @@
+from ResourceBase import ResourceBase
 
-class JarResource:
+class JarResource(ResourceBase):
     
     def getType(self):
         return "Jinn::Resource::Jar"
-    
-    def loadProperties(self, properties):
-        print properties

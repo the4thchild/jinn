@@ -1,8 +1,6 @@
+from ResourceBase import ResourceBase
 
-class NPAPIPluginResource:
+class NPAPIPluginResource(ResourceBase):
     
     def getType(self):
         return "Jinn::Resource::NPAPIPlugin"
-    
-    def loadProperties(self, properties):
-        print properties
