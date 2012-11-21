@@ -1,4 +1,4 @@
-from manifest.ActivityBase import ActivityBase
+from activity.ActivityBase import ActivityBase
 
 """
 A base class for Actions, providing interfaces they may wish to

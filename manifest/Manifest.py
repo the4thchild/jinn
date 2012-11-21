@@ -3,8 +3,9 @@ from loader.FileLoader import FileLoader
 from loader.UrlLoader import UrlLoader
 from manifest.exceptions import ManifestException
 from JinnVersion import JinnVersion
-from resources import Resource
-from actions import Action
+from resource.ResourceWrapper import ResourceWrapper
+from action.ActionWrapper import ActionWrapper
+from env.enums import *
 
 class Manifest:
     
@@ -69,7 +70,7 @@ class Manifest:
             i = 0
             dataResources = self.data["Resources"]
             for k in dataResources.keys():
-                self.resources.append(Resource(dataResources[k]))
+                self.resources.append(ResourceWrapper(OperatingSystem.LIN, Architecture.x64, dataResources[k]))
                 i += 1
             if i < 1:
                 raise ManifestException("The manifest must contain at least one resource")
@@ -83,7 +84,7 @@ class Manifest:
         try:
             dataActions = self.data["Actions"]
             for k in dataActions.keys():
-                self.actions.append(Action(dataActions[k]))
+                self.actions.append(ActionWrapper(OperatingSystem.LIN, Architecture.x64, dataActions[k]))
         except KeyError:
             raise ManifestException("The manifest file does not contain any actions")
     

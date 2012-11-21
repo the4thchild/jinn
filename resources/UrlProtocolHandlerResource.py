@@ -1,4 +1,4 @@
-from ResourceBase import ResourceBase
+from resource.ResourceBase import ResourceBase
 
 class UrlProtocolHandlerResource(ResourceBase):
     

@@ -17,8 +17,10 @@ class Jinn:
     """
     def runDefaultAction(self):
         if not self.isInstalled():
-            print "Cannot run default action, this jinn is not installed"
-            return 1
+            status = self.doInstall()
+            if status != 0:
+                print "Tried installing but failed horribly"
+                return status
         
         print "Default action"
         return 0
@@ -123,6 +125,7 @@ Options:
     """
     def __init__(self):
         #manifest = Manifest(options.manifest, options.manifest_is_url)
+        # This probably shouldn't do anything
         pass
 
 """

@@ -1,4 +1,4 @@
-from ActionBase import ActionBase
+from action.ActionBase import ActionBase
 
 class RunJarAction(ActionBase):
     

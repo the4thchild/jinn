@@ -1,4 +1,4 @@
-from manifest.ActivityBase import ActivityBase
+from activity.ActivityBase import ActivityBase
 
 """
 A base class for Resources, providing common
