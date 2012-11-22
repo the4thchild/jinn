@@ -54,8 +54,7 @@ class Jinn:
         if not self.isInstalled():
             print "This jinn is not installed, so cannot be uninstalled"
             return 1
-        
-        # TODO: Uninstallation
+
         print "Uninstall not implemented yet"
         return 1
     

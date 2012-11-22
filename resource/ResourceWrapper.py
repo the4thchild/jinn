@@ -3,7 +3,6 @@ import inspect
 from exceptions import *
 from env.enums import OperatingSystem, Architecture
 
-# TODO: Refactor ResourceWrapper and ActionWrapper to both inherit an ActivityWrapper
 """
 Resource object which represents a basic resource wrapper
 """

@@ -1,6 +1,5 @@
 import requests
 
-# TODO: Make this work with weird proxies, e.g. NTLM etc
 class UrlLoader:
     
     def __init__(self, url):
