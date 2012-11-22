@@ -4,7 +4,11 @@ import options
 #redundant import just for pyinstaller
 import encodings
 
+from feedback import FeedbackMechanisms
 from manifest.Manifest import Manifest
+from feedback.ConsoleFeedback import ConsoleFeedback
+from feedback.UIFeedback import UIFeedback
+from feedback.FeedbackBase import FeedbackBase
 
 class Jinn(object):
     
@@ -126,8 +130,16 @@ Options:
     """
     def __init__(self):
         #manifest = Manifest(options.manifest, options.manifest_is_url)
-        # This probably shouldn't do anything
-        pass
+        
+        # Setup feedback mechanism
+        global feedback
+        if (options.interface == FeedbackMechanisms.CMD):
+            feedback = ConsoleFeedback()
+        elif (options.interface == FeedbackMechanisms.UI):
+            feedback = UIFeedback()
+        else:
+            # Not specified, need something to stop errors, so us this
+            feedback = FeedbackBase()
 
 """
 Main function that is run when the code is started from this file
