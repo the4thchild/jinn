@@ -1,12 +1,16 @@
 import sys
 import os
 import options
+import g
+#redundant import just for pyinstaller
+import encodings
 
 from feedback import FeedbackMechanisms
 from manifest.Manifest import Manifest
 from feedback.ConsoleFeedback import ConsoleFeedback
 from feedback.UIFeedback import UIFeedback
 from feedback.FeedbackBase import FeedbackBase
+from feedback.LogLevels import LogLevels
 
 class Jinn(object):
     
@@ -23,10 +27,12 @@ class Jinn(object):
         if not self.isInstalled():
             status = self.doInstall()
             if status != 0:
-                print "Tried installing but failed horribly"
+                g.feedback.log(LogLevels.ERROR, "Tried installing but failed horribly")
+                g.feedback.userMessage("Installation failed (1) - please contact distributor")
                 return status
         
-        print "Default action"
+        manifest = Manifest(options.manifest, options.manifest_is_url)
+        g.feedback.log(LogLevels.DEBUG, "Default action")
         return 0
     
     """
@@ -34,10 +40,11 @@ class Jinn(object):
     """
     def runAction(self, action):
         if not self.isInstalled():
-            print "Cannot run action %s, this jinn is not installed" % action
+            g.feedback.log(LogLevels.ERROR, "Cannot run action %s, this jinn is not installed" % action)
+            g.feedback.userMessage("Installation failed (2) - please contact distributor")
             return 1
             
-        print "Run action %s" % action
+        g.feedback.log(LogLevels.DEBUG, "Run action %s" % action)
         return 0
     
     """
@@ -45,10 +52,11 @@ class Jinn(object):
     """
     def doInstall(self):
         if self.isInstalled():
-            print "This jinn is already installed"
+            g.feedback.log(LogLevels.ERROR, "This jinn is already insalled")
+            g.feedback.userMessage("Installation failed (3) - please contact distributor")
             return 1
         
-        print "Installing"
+        g.feedback.log(LogLevels.DEBUG, "Installing")
         return 0
     
     """
@@ -56,10 +64,11 @@ class Jinn(object):
     """
     def doUninstall(self):
         if not self.isInstalled():
-            print "This jinn is not installed, so cannot be uninstalled"
+            g.feedback.log(LogLevels.ERROR, "This jinn is not installed, so cannot be uninstalled")
+            g.feedback.userMessage("Installation failed (4) - please contact distributor")
             return 1
 
-        print "Uninstall not implemented yet"
+        g.feedback.log(LogLevels.DEBUG, "Uninstalling")
         return 1
     
     """
@@ -72,7 +81,7 @@ class Jinn(object):
     Output the help content
     """
     def doHelp(self):
-        print """
+        g.feedback.userMessage("""
     .---.                           
     |   |                           
     '---'.--.   _..._      _..._    
@@ -100,7 +109,7 @@ Options:
         Display this helpful help dialog
     ./jinn -action (actionname)
         Run the jinn action specified by (actionname)
-        """
+        """)
         return 0
     
     """
@@ -119,7 +128,7 @@ Options:
             return self.doHelp()
         elif sys.argv[1] == "-action":
             if len(sys.argv) < 3:
-                print "For -action, you must specify an action - try -help"
+                g.feedback.userMessage("For -action, you must specify an action - try -help")
                 return 1
             return self.runAction(sys.argv[2])
     
@@ -132,12 +141,12 @@ Options:
         # Setup feedback mechanism
         global feedback
         if (options.interface == FeedbackMechanisms.CMD):
-            feedback = ConsoleFeedback()
+            g.feedback = ConsoleFeedback()
         elif (options.interface == FeedbackMechanisms.UI):
-            feedback = UIFeedback()
+            g.feedback = UIFeedback()
         else:
             # Not specified, need something to stop errors, so us this
-            feedback = FeedbackBase()
+            g.feedback = FeedbackBase()
 
 """
 Main function that is run when the code is started from this file
@@ -148,5 +157,5 @@ def main():
 
 if __name__ == '__main__':
     status = main()
-    print "Jinn exiting with code %s" % str(status)
+    g.feedback.userMessage("Jinn exiting with code %s" % str(status))
     sys.exit(status)

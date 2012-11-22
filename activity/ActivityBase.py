@@ -1,9 +1,11 @@
+import g
 
 """
 A base class for Resources and Actions
 Defines methods that these types, through
 ActionBase and ResourceBase, can implement
 """
+from feedback.LogLevels import LogLevels
 class ActivityBase(object):
     
     # Properties of this activity
@@ -20,7 +22,7 @@ class ActivityBase(object):
     """
     def loadProperties(self, properties):
         self.properties = properties;
-        print properties
+        g.feedback.log(LogLevels.DEBUG, properties)
     
     """
     Return the type string this Activity corresponds to

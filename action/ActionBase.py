@@ -1,4 +1,6 @@
+import g
 from activity.ActivityBase import ActivityBase
+from feedback.LogLevels import LogLevels
 
 """
 A base class for Actions, providing interfaces they may wish to
@@ -10,7 +12,7 @@ class ActionBase(ActivityBase):
     Command the action to run
     """
     def doRun(self):
-        print "Action does not implement doRun"
+        g.feedback.log(LogLevels.ERROR, "Action does not implement doRun")
         return 1
     
     

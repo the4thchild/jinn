@@ -1,6 +1,9 @@
 import sys
 import inspect
+import g
 from exceptions import *
+from feedback.LogLevels import LogLevels
+from env.enums import OperatingSystem, Architecture
 
 """
 General code which applies to all activity wrappers
@@ -78,12 +81,14 @@ class ActivityWrapper(object):
                 if isinstance(platform, basestring):
                     platform = [platform]
                 if self.os not in platform:
+                    g.feedback.log(LogLevels.DEBUG, "Unable to find OS %s in Platforms %s" % (OperatingSystem().getOperatingSystem(self.os), platform))
                     return False
             if "Architecture" in conditions:
                 architecture = conditions["Architecture"]
                 if isinstance(architecture, basestring):
                     architecture = [architecture]
                 if self.arch not in architecture:
+                    g.feedback.log(LogLevels.DEBUG, "Unable to find architecture %s in Architectures %s" % (Architecture().getArchitecture(self.arch), architecture))
                     return False
         return True
     
