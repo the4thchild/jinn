@@ -15,6 +15,13 @@ class FileSystemHelper(object):
         return os.path.isdir(directory)
     
     """
+    Returns whether or not the path exists
+    Could be a directory or a file
+    """
+    def exists(self, path):
+        return os.path.exists(path)
+    
+    """
     Return the current working directory
     """
     def getCurrentDirectory(self):
@@ -94,3 +101,19 @@ class FileSystemHelper(object):
     def getPathFromFilePath(self, path):
         path,file=os.path.split(path)
         return path
+    
+    """
+    Deletes a file or directory at the specified location
+    """
+    def delete(self, path):
+        # TODO: Does this work with Symlinks? To folders / files?
+        try:
+            if os.path.isdir(path):
+                # Delete if a directory
+                shutil.rmtree(path)
+            elif os.path.exists(path):
+                # Delete if a file
+                os.remove(path)
+            return True
+        except:
+            return False

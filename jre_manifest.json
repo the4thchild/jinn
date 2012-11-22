@@ -1,0 +1,22 @@
+{
+	"Jinn": {
+		"AppName": "jrederp",
+        "Version" : "XXX",
+        "Source"  : "http://blah.com/1.1/jinn.zip",
+        "Updater" : "http://blah.com/1.1/jinn-updater.exe"
+    },
+	"Description": "JRE resource test",
+	"Resources": {
+		"jre": {
+            "Type": "Jinn::Resource::Jre",
+            "Name": "My lovely JRE",
+            "Properties": {
+                "Source": "https://s3.amazonaws.com/importio/jre/jre-7.5-linux-32.tar.gz",
+                "Path": "jrederp"
+            },
+            "Version": "1.0.0"
+        }
+	},
+	"Actions": {
+	}
+}
