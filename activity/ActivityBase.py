@@ -1,12 +1,14 @@
 import g
+from feedback.LogLevels import LogLevels
+from loader.UrlDownloader import UrlDownloader
+from helpers.FileSystemHelper import FileSystemHelper
 
 """
 A base class for Resources and Actions
 Defines methods that these types, through
 ActionBase and ResourceBase, can implement
 """
-from feedback.LogLevels import LogLevels
-class ActivityBase(object):
+class ActivityBase(FileSystemHelper):
     
     # Properties of this activity
     properties = None
@@ -22,7 +24,7 @@ class ActivityBase(object):
     """
     def loadProperties(self, properties):
         self.properties = properties;
-        g.feedback.log(LogLevels.DEBUG, properties)
+        #g.feedback.log(LogLevels.DEBUG, properties)
     
     """
     Return the type string this Activity corresponds to
@@ -36,3 +38,10 @@ class ActivityBase(object):
     def __init__(self, os, arch):
         self.os = os
         self.arch = arch
+        
+    """
+    Helper function which does a download from a URL to a file
+    """
+    def doDownload(self, url, file):
+        downloader = UrlDownloader(url)
+        return downloader.download(file)

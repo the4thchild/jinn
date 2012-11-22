@@ -1,4 +1,5 @@
 import sys
+import g
 from loader.FileLoader import FileLoader
 from loader.UrlLoader import UrlLoader
 from manifest.exceptions import ManifestException
@@ -6,8 +7,11 @@ from JinnVersion import JinnVersion
 from resource.ResourceWrapper import ResourceWrapper
 from action.ActionWrapper import ActionWrapper
 from env.enums import *
+from helpers.FileSystemHelper import FileSystemHelper
+import json
+from feedback.LogLevels import LogLevels
 
-class Manifest(object):
+class Manifest(FileSystemHelper):
     
     # Versioning information
     jinn = None
@@ -92,6 +96,25 @@ class Manifest(object):
         except KeyError:
             raise ManifestException("The manifest file does not contain any actions")
     
+    """
+    Save the raw manifest data to the manifest fil
+    """
+    def save(self):
+        return self.saveToFile(".jinn" + self.getDirectorySeparator() + "current_manifest.json", json.dumps(self.data))
+    
+    """
+    Installs all of the resources
+    """
+    def installResources(self):
+        for res in self.resources:
+            g.feedback.log(LogLevels.DEBUG, "Installing: %s" % res.name)
+            if not res.doInstall():
+                return False
+        return True
+    
+    """
+    Manifest initialisation
+    """
     def __init__(self, location, is_url = True):
         self.load(location, is_url)
 

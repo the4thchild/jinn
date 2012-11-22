@@ -19,3 +19,9 @@ class ResourceWrapper(ActivityWrapper):
             self.version = self.data["Version"]
         except KeyError as e:
             raise ResourceDataMissingException("Unable to find the required key %s" % e)
+        
+    """
+    Install this resource
+    """
+    def doInstall(self):
+        return self.type.doInstall()
