@@ -1,5 +1,6 @@
 import requests
 
+# TODO: Make this work with weird proxies, e.g. NTLM etc
 class UrlLoader:
     
     def __init__(self, url):
@@ -13,9 +14,9 @@ class UrlLoader:
         if self.url_contents == None:
             r = requests.get(self.url)
             if is_json:
-                url_contents = r.json()
+                self.url_contents = r.json()
             else:
-                url_contents = r.text()
+                self.url_contents = r.text()
         return self.url_contents
     
     def __del__(self):
