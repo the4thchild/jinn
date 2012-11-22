@@ -3,6 +3,7 @@ from event import Event
 """
 Base class for feedback to the user
 """
+from feedback.LogLevels import LogLevels
 class FeedbackBase(object):
     
     # How much progress has been completed of the current progress operation
@@ -34,8 +35,8 @@ class FeedbackBase(object):
     Returns true if started, false if one is already running
     """
     def startProgress(self):
-        if self.progressAmount is not None:
-            # TODO: Log message here
+        if self.isStarted():
+            self.log(LogLevels.WARN, "Can't start progress as one is already running")
             return False
         self.progressAmount = 0
         self.progressChangeEvent(self.progressAmount)
@@ -46,6 +47,9 @@ class FeedbackBase(object):
     Returns whether or not we have hit 100 percent
     """
     def incrementProgress(self, percentageIncrease):
+        if not self.isStarted():
+            self.log(LogLevels.WARN, "Attempting to increment without started progress, so starting")
+            self.startProgress()
         self.progressAmount = max(self.progressAmount + percentageIncrease, 100)
         self.progressChangeEvent(self.progressAmount)
         return self.progressAmount >= 100
@@ -55,6 +59,9 @@ class FeedbackBase(object):
     Returns whether or not we have hit 0 percent
     """
     def decrementProgress(self, percentageDecrease):
+        if not self.isStarted():
+            self.log(LogLevels.WARN, "Attempting to decrement without started progress, so starting")
+            self.startProgress()
         self.progressAmount = min(self.progressAmount - percentageDecrease, 0)
         self.progressChangeEvent(self.progressAmount)
         return self.progressAmount <= 0
@@ -65,7 +72,14 @@ class FeedbackBase(object):
     """
     def endProgress(self):
         if self.progressAmount is None:
+            self.log(LogLevels.WARN, "Attempting to end progress but is not started")
             return False;
         self.progressAmount = None
         self.progressChangeEvent(self.progressAmount)
         return True
+    
+    """
+    Whether or not the progress is currently started
+    """
+    def isStarted(self):
+        return self.progressAmount is not None
