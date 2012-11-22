@@ -49,6 +49,9 @@ class ActivityWrapper(object):
                 pass
         raise ActivityNotFoundException("Unable to load action for type %s" % desiredType)
     
+    """
+    Load helper for getting common stuff 
+    """
     def load(self):
         self.name = self.data["Name"]
         if "Description" in self.data:
@@ -57,9 +60,18 @@ class ActivityWrapper(object):
         if "Conditions" in self.data:
             self.conditions = self.data["Conditions"]
     
+    """
+    Helper to load a properties object
+    """
     def loadPropertiesObject(self, module):
         self.type = self.getClass(module, self.data["Type"])
         self.type.loadProperties(self.data["Properties"])
+    
+    """
+    Checks the conditions on the wrapper to make sure it is valid
+    """
+    def checkConditions(self):
+        return True
     
     """
     Constructor which gets the data, OS and architecture

@@ -70,7 +70,9 @@ class Manifest(object):
             i = 0
             dataResources = self.data["Resources"]
             for k in dataResources.keys():
-                self.resources.append(ResourceWrapper(dataResources[k], OperatingSystem.LIN, Architecture.x64))
+                res = ResourceWrapper(dataResources[k], OperatingSystem.LIN, Architecture.x64)
+                if res.checkConditions():
+                    self.resources.append(res)
                 i += 1
             if i < 1:
                 raise ManifestException("The manifest must contain at least one resource")
@@ -84,7 +86,9 @@ class Manifest(object):
         try:
             dataActions = self.data["Actions"]
             for k in dataActions.keys():
-                self.actions.append(ActionWrapper(dataActions[k], OperatingSystem.LIN, Architecture.x64))
+                action = ActionWrapper(dataActions[k], OperatingSystem.LIN, Architecture.x64)
+                if action.checkConditions():
+                    self.actions.append(action)
         except KeyError:
             raise ManifestException("The manifest file does not contain any actions")
     
