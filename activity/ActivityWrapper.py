@@ -80,15 +80,17 @@ class ActivityWrapper(object):
                 platform = conditions["Platform"]
                 if isinstance(platform, basestring):
                     platform = [platform]
-                if self.os not in platform:
-                    g.feedback.log(LogLevels.DEBUG, "Unable to find OS %s in Platforms %s" % (OperatingSystem().getOperatingSystem(self.os), platform))
+                os = OperatingSystem().getOperatingSystem(self.os)
+                if os not in platform:
+                    g.feedback.log(LogLevels.DEBUG, "Unable to find OS %s in Platforms %s" % (os, platform))
                     return False
             if "Architecture" in conditions:
                 architecture = conditions["Architecture"]
                 if isinstance(architecture, basestring):
                     architecture = [architecture]
-                if self.arch not in architecture:
-                    g.feedback.log(LogLevels.DEBUG, "Unable to find architecture %s in Architectures %s" % (Architecture().getArchitecture(self.arch), architecture))
+                arch = Architecture().getArchitecture(self.arch)
+                if arch not in architecture:
+                    g.feedback.log(LogLevels.DEBUG, "Unable to find architecture %s in Architectures %s" % (arch, architecture))
                     return False
         return True
     

@@ -14,9 +14,9 @@
 			"Properties": {
 				"Source": {
 					"Platform": {
-						"win": {
-							"32": "derp",
-							"64": "herp"
+						"WIN": {
+							"x32": "derp",
+							"x64": "herp"
 						}
 					}
 				},
@@ -24,8 +24,8 @@
 				"Path": "derp/herp"
 			},
 			"Conditions": {
-				"Platform": "win",
-				"Architecture": ["32", "64"]
+				"Platform": "WIN",
+				"Architecture": ["x32", "x64"]
 			},
 			"Version": "1.0.0"
 		},
@@ -40,8 +40,8 @@
 				"Path": "derp/herp"
 			},
 			"Conditions": {
-				"Platform": "win",
-				"Architecture": "32"
+				"Platform": ["WIN", "LIN"],
+				"Architecture": "x32"
 			},
 			"Version": "2.0.0"
 		}
