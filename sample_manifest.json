@@ -9,6 +9,7 @@
 	
 		"MyJar": {
 			"Type": "Jinn::Resource::Jar",
+			"Name": "The main application content",
 			"Description": "Jar to load",
 			"Properties": {
 				"Source": {
@@ -31,6 +32,7 @@
 		
 		"MyJre": {
 			"Type": "Jinn::Resource::Jre",
+			"Name": "The correct Java runtime environment",
 			"Description": "JRE to load",
 			"Properties": {
 				"Source": "",
@@ -47,6 +49,7 @@
 	"Actions": {
 		"ActionName": {
 			"Type": "Jinn::Action::RunJar",
+			"Name": "Jinn start",
 			"Description": "Run the program",
 			"Properties": {
 				"Jre": { "Ref": "MyJre" },
