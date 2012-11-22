@@ -20,6 +20,23 @@ class Jinn(object):
     # The new manifest, as loaded from the remote URL
     new_manifest = None
     
+    # Header for messages
+    header = """
+    .---.                           
+    |   |                           
+    '---'.--.   _..._      _..._    
+    .---.|__| .'     '.  .'     '.  
+    |   |.--..   .-.   ..   .-.   . 
+    |   ||  ||  '   '  ||  '   '  | 
+    |   ||  ||  |   |  ||  |   |  | 
+    |   ||  ||  |   |  ||  |   |  | 
+    |   ||  ||  |   |  ||  |   |  | 
+    |   ||__||  |   |  ||  |   |  | 
+ __.'   '    |  |   |  ||  |   |  | 
+|      '     |  |   |  ||  |   |  | 
+|____.'      '--'   '--''--'   '--' 
+A Java installer"""
+    
     """
     Runs the default action in the jinn
     """
@@ -78,24 +95,20 @@ class Jinn(object):
         return os.path.isdir(".jinn")
     
     """
+    Output the version information
+    """
+    def doVersion(self):
+        g.feedback.userMessage("""
+%s
+Version: %s
+""" % (self.header, options.version))
+    
+    """
     Output the help content
     """
     def doHelp(self):
         g.feedback.userMessage("""
-    .---.                           
-    |   |                           
-    '---'.--.   _..._      _..._    
-    .---.|__| .'     '.  .'     '.  
-    |   |.--..   .-.   ..   .-.   . 
-    |   ||  ||  '   '  ||  '   '  | 
-    |   ||  ||  |   |  ||  |   |  | 
-    |   ||  ||  |   |  ||  |   |  | 
-    |   ||  ||  |   |  ||  |   |  | 
-    |   ||__||  |   |  ||  |   |  | 
- __.'   '    |  |   |  ||  |   |  | 
-|      '     |  |   |  ||  |   |  | 
-|____.'      '--'   '--''--'   '--' 
-A Java installer
+%s
 Created by import.io
         
 Options:
@@ -109,7 +122,9 @@ Options:
         Display this helpful help dialog
     ./jinn -action (actionname)
         Run the jinn action specified by (actionname)
-        """)
+    ./jinn -version
+        Print the version string
+        """ % self.header)
         return 0
     
     """
@@ -126,6 +141,8 @@ Options:
             return self.doUninstall()
         elif sys.argv[1] == "-help":
             return self.doHelp()
+        elif sys.argv[1] == "-version":
+            return self.doVersion()
         elif sys.argv[1] == "-action":
             if len(sys.argv) < 3:
                 g.feedback.userMessage("For -action, you must specify an action - try -help")
