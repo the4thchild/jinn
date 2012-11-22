@@ -15,8 +15,7 @@ class ActionWrapper(ActivityWrapper):
     def load(self):
         try:
             super(ActionWrapper, self).load()
-            self.type = self.getClass("actions", self.data["Type"])
-            self.type.loadProperties(self.data["Properties"])
+            super(ActionWrapper, self).loadPropertiesObject("actions")
             if "Default" in self.data:
                 self.default = self.data["Default"]
         except KeyError as e:

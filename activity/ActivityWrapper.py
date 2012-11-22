@@ -53,6 +53,10 @@ class ActivityWrapper(object):
         if "Conditions" in self.data:
             self.conditions = self.data["Conditions"]
     
+    def loadPropertiesObject(self, module):
+        self.type = self.getClass(module, self.data["Type"])
+        self.type.loadProperties(self.data["Properties"])
+    
     """
     Constructor which gets the data, OS and architecture
     """

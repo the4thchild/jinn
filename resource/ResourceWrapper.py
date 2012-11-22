@@ -15,8 +15,7 @@ class ResourceWrapper(ActivityWrapper):
     def load(self):
         try:
             super(ResourceWrapper, self).load()
-            self.type = self.getClass("resources", self.data["Type"])
-            self.type.loadProperties(self.data["Properties"])
+            super(ResourceWrapper, self).loadPropertiesObject("resources")
             self.version = self.data["Version"]
         except KeyError as e:
             raise ResourceDataMissingException("Unable to find the required key %s" % e)
