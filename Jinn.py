@@ -2,6 +2,8 @@ import sys
 import os
 import options
 import g
+#redundant import just for pyinstaller
+import encodings
 
 from feedback import FeedbackMechanisms
 from manifest.Manifest import Manifest
@@ -134,7 +136,10 @@ Options:
     Initialises the Jinn class, which handles all of the application lifecycle
     """
     def __init__(self):
+        #manifest = Manifest(options.manifest, options.manifest_is_url)
+        
         # Setup feedback mechanism
+        global feedback
         if (options.interface == FeedbackMechanisms.CMD):
             g.feedback = ConsoleFeedback()
         elif (options.interface == FeedbackMechanisms.UI):
