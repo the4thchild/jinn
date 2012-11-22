@@ -13,6 +13,9 @@ class ActivityWrapper(object):
     # The type of this activity
     type = None
     
+    # The name of this activity
+    name = None
+    
     # Description of the activity
     description = ""
     
@@ -47,6 +50,7 @@ class ActivityWrapper(object):
         raise ActivityNotFoundException("Unable to load action for type %s" % desiredType)
     
     def load(self):
+        self.name = self.data["Name"]
         if "Description" in self.data:
                 self.description = self.data["Description"]
         self.properties = self.data["Properties"]
