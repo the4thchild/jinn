@@ -1,6 +1,9 @@
 import sys
 import inspect
+import g
 from exceptions import *
+from feedback.LogLevels import LogLevels
+from env.enums import OperatingSystem, Architecture
 
 """
 General code which applies to all activity wrappers
@@ -49,6 +52,9 @@ class ActivityWrapper(object):
                 pass
         raise ActivityNotFoundException("Unable to load action for type %s" % desiredType)
     
+    """
+    Load helper for getting common stuff 
+    """
     def load(self):
         self.name = self.data["Name"]
         if "Description" in self.data:
@@ -57,9 +63,34 @@ class ActivityWrapper(object):
         if "Conditions" in self.data:
             self.conditions = self.data["Conditions"]
     
+    """
+    Helper to load a properties object
+    """
     def loadPropertiesObject(self, module):
         self.type = self.getClass(module, self.data["Type"])
         self.type.loadProperties(self.data["Properties"])
+    
+    """
+    Checks the conditions on the wrapper to make sure it is valid
+    """
+    def checkConditions(self):
+        if "Conditions" in self.data:
+            conditions = self.data["Conditions"]
+            if "Platform" in conditions:
+                platform = conditions["Platform"]
+                if isinstance(platform, basestring):
+                    platform = [platform]
+                if self.os not in platform:
+                    g.feedback.log(LogLevels.DEBUG, "Unable to find OS %s in Platforms %s" % (OperatingSystem().getOperatingSystem(self.os), platform))
+                    return False
+            if "Architecture" in conditions:
+                architecture = conditions["Architecture"]
+                if isinstance(architecture, basestring):
+                    architecture = [architecture]
+                if self.arch not in architecture:
+                    g.feedback.log(LogLevels.DEBUG, "Unable to find architecture %s in Architectures %s" % (Architecture().getArchitecture(self.arch), architecture))
+                    return False
+        return True
     
     """
     Constructor which gets the data, OS and architecture
