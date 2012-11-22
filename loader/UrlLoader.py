@@ -1,6 +1,6 @@
 import requests
 
-class UrlLoader:
+class UrlLoader(object):
     
     def __init__(self, url):
         self.url = url

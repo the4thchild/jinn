@@ -4,7 +4,7 @@ import options
 
 from manifest.Manifest import Manifest
 
-class Jinn:
+class Jinn(object):
     
     # The current manifest, as loaded from the filesystem
     current_manifest = None

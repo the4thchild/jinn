@@ -1,7 +1,7 @@
 """
 A pretend enum for operating system
 """
-class OperatingSystem:
+class OperatingSystem(object):
     WIN = 1
     OSX = 2
     LIN = 3
@@ -9,14 +9,14 @@ class OperatingSystem:
 """
 A pretend enum for system architecture
 """
-class Architecture:
+class Architecture(object):
     x32 = 2
     x64 = 4
     
 """
 A pretend enum for os / architecture combo
 """
-class Environment:
+class Environment(object):
     WINx32 = OperatingSystem.WIN * Architecture.x32
     WINx64 = OperatingSystem.WIN * Architecture.x64
     OSXx32 = OperatingSystem.OSX * Architecture.x32
