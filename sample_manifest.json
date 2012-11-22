@@ -1,5 +1,6 @@
 {
 	"Jinn": {
+		"AppName": "herp",
         "Version" : "XXX",
         "Source"  : "http://blah.com/1.1/jinn.zip",
         "Updater" : "http://blah.com/1.1/jinn-updater.exe"

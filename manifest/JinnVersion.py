@@ -5,6 +5,9 @@ class JinnVersion(object):
     # Data for the version from the configuration
     data = None
     
+    # The name of the jinn
+    name = None
+    
     # The version of the jinn
     version = None
     
@@ -16,6 +19,7 @@ class JinnVersion(object):
     
     def load(self):
         try:
+            self.name = self.data["AppName"]
             self.version = self.data["Version"]
             self.source = self.data["Source"]
             self.updater = self.data["Updater"]

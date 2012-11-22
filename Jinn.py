@@ -1,7 +1,7 @@
 import sys
-import os
 import options
 import g
+import os
 #redundant import just for pyinstaller
 import encodings
 
@@ -11,8 +11,9 @@ from feedback.ConsoleFeedback import ConsoleFeedback
 from feedback.UIFeedback import UIFeedback
 from feedback.FeedbackBase import FeedbackBase
 from feedback.LogLevels import LogLevels
+from helpers.FileSystemHelper import FileSystemHelper
 
-class Jinn(object):
+class Jinn(FileSystemHelper):
     
     # The current manifest, as loaded from the filesystem
     current_manifest = None
@@ -40,6 +41,12 @@ A Java installer"""
     """
     Runs the default action in the jinn
     """
+
+    def loadManifest(self):
+        g.feedback.log(LogLevels.DEBUG, "Loading manifest from %s" % options.manifest)
+        self.manifest = Manifest(options.manifest, options.manifest_is_url)
+        g.feedback.log(LogLevels.DEBUG, "Manifest is %s" % self.manifest)
+
     def runDefaultAction(self):
         if not self.isInstalled():
             status = self.doInstall()
@@ -47,8 +54,9 @@ A Java installer"""
                 g.feedback.log(LogLevels.ERROR, "Tried installing but failed horribly")
                 g.feedback.userMessage("Installation failed (1) - please contact distributor")
                 return status
+        else:
+            self.loadManifest()
         
-        manifest = Manifest(options.manifest, options.manifest_is_url)
         g.feedback.log(LogLevels.DEBUG, "Default action")
         return 0
     
@@ -65,16 +73,74 @@ A Java installer"""
         return 0
     
     """
+    Are we in dev mode?
+    """
+    def isDevMode(self):
+        return options.version is "DEV"
+
+    """
     Runs an installation of this jinn
     """
     def doInstall(self):
+        # We need the manifest first of all
+        self.loadManifest()
+        
+        # Hard code here to not happen for dev
+        if not self.isCorrectDirectory() and not self.isDevMode():
+            g.feedback.log(LogLevels.DEBUG, "We are not in the correct directory, so changing to that")
+            
+            # Make the jinn install directory
+            dir = self.getInstallTargetDirectory()
+            if not self.makeDirectory(dir):
+                g.feedback.log(LogLevels.ERROR, "Unable to make directory %s" % dir)
+                return 1
+            
+            # Copy this binary into it
+            frm = self.getCurrentFile()
+            to = self.getInstallTargetFile()
+            if not self.copyFile(frm, to):
+                g.feedback.log(LogLevels.ERROR, "Unable to copy %s to %s" % (frm,to))
+                return 1
+            
+            # Change into that directory
+            if not self.changeDirectory(self.getInstallTargetDirectory()):
+                g.feedback.log(LogLevels.ERROR, "Unable to change to the InstallTargetDirectory")
+                return 1
+            
+            # Run the new executable
+            g.feedback.log(LogLevels.DEBUG, "Code copied to %s, executing" % to)
+            os.system("./" + self.getExecutableName())
+            return 0
+    
+        # Make sure we are in the right directory
+        installDir = self.getInstallTargetDirectory()
+        if not self.changeDirectory(installDir) and not self.isDevMode():
+            g.feedback.log(LogLevels.ERROR, "Unable to change to where we thought we were installed, %s" % installDir)
+            return 1
+        
         if self.isInstalled():
             g.feedback.log(LogLevels.ERROR, "This jinn is already insalled")
             g.feedback.userMessage("Installation failed (3) - please contact distributor")
             return 1
         
         g.feedback.log(LogLevels.DEBUG, "Installing")
-        return 0
+        
+        if not self.makeDirectory(".jinn"):
+            g.feedback.log(LogLevels.ERROR, "Unable to make .jinn directory")
+            return 1
+        
+        if not self.manifest.save():
+            g.feedback.log(LogLevels.ERROR, "Unable to save the manifest")
+            return 1
+        
+        try:
+            if self.manifest.installResources():
+                return 0
+            else:
+                return 1
+        except Exception as e:
+            g.feedback.log(LogLevels.ERROR, "Unable to install resources: %s" % e)
+            return 1
     
     """
     Runs uninstallation
@@ -89,10 +155,41 @@ A Java installer"""
         return 1
     
     """
+    Returns the install target directory
+    """
+    def getInstallTargetDirectory(self):
+        return self.getHomeDirectory() + self.getDirectorySeparator() + self.manifest.jinn.name
+
+    """
+    Get the name of the executabl
+    """
+    def getExecutableName(self):
+        # TODO: Platform dependency here
+        return "builder.bin"
+
+    """
+    Get the file we wish to install to
+    """
+    def getInstallTargetFile(self):
+        return self.getInstallTargetDirectory() + self.getDirectorySeparator() + self.getExecutableName()
+
+    """
+    Check whether or not we are running from the right place
+    """
+    def isCorrectDirectory(self):
+        currentdir = self.getCurrentDirectory()
+        targetdir = self.getInstallTargetDirectory()
+        
+        g.feedback.log(LogLevels.DEBUG, "Current directory: %s" % currentdir)
+        g.feedback.log(LogLevels.DEBUG, "Target dir: %s" % targetdir)
+        
+        return targetdir == currentdir
+    
+    """
     Check whether or not this jinn is currently installed
     """
     def isInstalled(self):
-        return os.path.isdir(".jinn")
+        return self.directoryExists(".jinn")
     
     """
     Output the version information
