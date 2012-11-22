@@ -1,22 +1,17 @@
 import json
+from LoaderBase import LoaderBase
 
-class FileLoader(object):
+class FileLoader(LoaderBase):
     
     # The file handler object
     file = None
     
-    # Cache for contents of the file
-    file_contents = None
+    def __init__(self, location):
+        super(FileLoader, self).__init__(location)
+        self.file = open(self.location)
     
-    # Name of the file
-    file_name = None
-    
-    def __init__(self, filename):
-        self.file_name = filename
-        self.file = open(filename)
-    
-    def read(self, is_json):
-        if self.file_contents == None:
+    def read(self, is_json = False):
+        if self.cache == None:
             file_contents = ""
             for line in self.file:
                 file_contents += line
@@ -25,8 +20,8 @@ class FileLoader(object):
                     file_contents = json.loads(file_contents)
                 except ValueError:
                     file_contents = None
-            self.file_contents = file_contents
-        return self.file_contents
+            self.cache = file_contents
+        return self.cache
     
     def __del__(self):
         self.file.close()
