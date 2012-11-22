@@ -1,6 +1,6 @@
 from manifest.exceptions import VersionDataMissingException
 
-class JinnVersion:
+class JinnVersion(object):
     
     # Data for the version from the configuration
     data = None

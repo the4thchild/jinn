@@ -7,7 +7,7 @@ from resource.ResourceWrapper import ResourceWrapper
 from action.ActionWrapper import ActionWrapper
 from env.enums import *
 
-class Manifest:
+class Manifest(object):
     
     # Versioning information
     jinn = None

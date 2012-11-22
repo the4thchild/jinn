@@ -1,6 +1,6 @@
 import json
 
-class FileLoader:
+class FileLoader(object):
     
     # The file handler object
     file = None

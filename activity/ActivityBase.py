@@ -4,7 +4,7 @@ A base class for Resources and Actions
 Defines methods that these types, through
 ActionBase and ResourceBase, can implement
 """
-class ActivityBase:
+class ActivityBase(object):
     
     # Properties of this activity
     properties = None
