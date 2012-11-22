@@ -17,7 +17,7 @@ class Event(object):
     Add a function to be called when the event is called
     """
     def __iadd__(self, handler):
-        self.handler.add(handler)
+        self.handlers.add(handler)
         return self
 
     """
