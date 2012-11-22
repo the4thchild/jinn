@@ -1,6 +1,8 @@
 import sys
 import os
 import options
+#redundant import just for pyinstaller
+import encodings
 
 from manifest.Manifest import Manifest
 
