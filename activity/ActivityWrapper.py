@@ -5,7 +5,7 @@ from exceptions import *
 """
 General code which applies to all activity wrappers
 """
-class ActivityWrapper:
+class ActivityWrapper(object):
     
     # The data for the activity (from config file)
     data = None
@@ -45,6 +45,13 @@ class ActivityWrapper:
             except:
                 pass
         raise ActivityNotFoundException("Unable to load action for type %s" % desiredType)
+    
+    def load(self):
+        if "Description" in self.data:
+                self.description = self.data["Description"]
+        self.properties = self.data["Properties"]
+        if "Conditions" in self.data:
+            self.conditions = self.data["Conditions"]
     
     """
     Constructor which gets the data, OS and architecture
