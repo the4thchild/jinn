@@ -71,6 +71,20 @@ class ActivityWrapper(object):
     Checks the conditions on the wrapper to make sure it is valid
     """
     def checkConditions(self):
+        if "Conditions" in self.data:
+            conditions = self.data["Conditions"]
+            if "Platform" in conditions:
+                platform = conditions["Platform"]
+                if isinstance(platform, basestring):
+                    platform = [platform]
+                if self.os not in platform:
+                    return False
+            if "Architecture" in conditions:
+                architecture = conditions["Architecture"]
+                if isinstance(architecture, basestring):
+                    architecture = [architecture]
+                if self.arch not in architecture:
+                    return False
         return True
     
     """
