@@ -1,4 +1,5 @@
 import g
+import os
 from feedback.LogLevels import LogLevels
 from zipfile import ZipFile
 import tarfile
@@ -15,7 +16,7 @@ class CompressionHelper(FileSystemHelper):
     def getCompressionType(self, filename):
         if filename.endswith(".tar.gz"):
             return CompressionType.TARGZ
-        elif filename.endswith(".pack.jar"):
+        elif filename.endswith(".pack.gz"):
             return CompressionType.PACK200
         elif filename.endswith(".zip"):
             return CompressionType.ZIP
@@ -35,17 +36,24 @@ class CompressionHelper(FileSystemHelper):
     nameforcompression is the string to use to figure out what type of compression to use
     Use this when your filename doesnt specify the encoding type but you have another string that does
     """
-    def decompress(self, filename, nameforcompression, path = "."):
+    def decompress(self, filename, nameforcompression, path = ".", pathHasFileName = False):
         t = self.getCompressionType(nameforcompression)
+        
+        if t is None:
+            # Found no compression, so don't need to do anything
+            g.feedback.log(LogLevels.DEBUG, "File %s does not have any compression on it" % filename)
+            return True
         
         # Make the directory to extract to if it does not yet exist
         if path is not ".":
-            self.makeDirectory(path)
+            if pathHasFileName:
+                mkdirpath = self.getPathFromFilePath(path)
+            else:
+                mkdirpath = path
+            if not self.makeDirectory(mkdirpath):
+                return False
             
-        if t is None:
-            g.feedback.log(LogLevels.WARN, "File %s does not have any compression on it" % filename)
-            return False
-        elif t is CompressionType.ZIP:
+        if t is CompressionType.ZIP:
             # TODO: Test this works
             ZipFile(filename).extractall(path)
             return True
@@ -55,9 +63,33 @@ class CompressionHelper(FileSystemHelper):
             tar.close()
             return True
         elif t is CompressionType.PACK200:
-            # TODO: Implement pack 200
-            g.feedback.log(LogLevels.ERROR, "Pack 200 not yet implemented")
-            return False
+            # Check there is a valid manifest file
+            if self.manifest is None:
+                g.feedback.log(LogLevels.ERROR, "Pack200 not available, no manifest in this helper instance")
+                return False
+        
+            # Attempt to load a JRE resource
+            res = self.manifest.getResourceForType("Jinn::Resource::Jre")
+            if res is None:
+                g.feedback.log(LogLevels.ERROR, "Pack200 not available, no JRE found in the project")
+                return False
+            
+            # Check the unpack exists
+            unpacker = res.getPath() + self.getDirectorySeparator() + "bin" + self.getDirectorySeparator() + "unpack200"
+            if not self.exists(unpacker):
+                g.feedback.log(LogLevels.ERROR, "Pack200 not available, JRE found but unable to find unpack200 in the bin path: %s" % unpacker)
+                return False
+            
+            filepath = self.getPathFromFilePath(path)
+            if len(filepath) > 0:
+                filepath = filepath + self.getDirectorySeparator()
+            cmd = unpacker + " " + filename + " " + filepath + filename.replace(".pack.gz", "")
+            res = os.system(cmd)
+            if res > 0:
+                g.feedback.log(LogLevels.ERROR, "Return code from unpacker is %s, unpack command: %s" % (res, cmd))
+                return False
+            else:
+                return True
         else:
             g.feedback.log(LogLevels.ERROR, "Compression type %s is not currently supported" % str(type))
             return False

@@ -1,0 +1,33 @@
+{
+	"Jinn": {
+		"AppName": "derp",
+        "Version" : "XXX",
+        "Source"  : "http://blah.com/1.1/jinn.zip",
+        "Updater" : "http://blah.com/1.1/jinn-updater.exe"
+    },
+	"Description": "File resource test",
+	"Resources": {
+	
+		"jre": {
+            "Type": "Jinn::Resource::Jre",
+            "Name": "My lovely JRE",
+            "Properties": {
+                "Source": "https://s3.amazonaws.com/importio/jre/jre-7.5-linux-32.tar.gz",
+                "Path": "jre"
+            },
+            "Version": "1.0.0"
+        },
+	
+		"swt": {
+            "Type": "Jinn::Resource::Jar",
+            "Name": "SWT Jar",
+            "Properties": {
+                "Source": "https://s3.amazonaws.com/importio/swt/swt-4.2-linux-32.jar.pack.gz",
+                "Path": "lib/swt.jar"
+            },
+            "Version": "1.0.0"
+        }
+	},
+	"Actions": {
+	}
+}

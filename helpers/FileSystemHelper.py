@@ -1,6 +1,8 @@
 import os
 import shutil
 import sys
+import g
+from feedback.LogLevels import LogLevels
 
 """
 A helper class for doing common things on the filesystem
@@ -32,10 +34,11 @@ class FileSystemHelper(object):
     """
     def makeDirectory(self, directory):
         try:
-            if not os.path.exists(directory):
+            if not os.path.isdir(directory):
                 os.makedirs(directory)
             return True
         except:
+            g.feedback.log(LogLevels.ERROR, "Unable to create path %s" % directory)
             return False;
             
     """
@@ -79,9 +82,9 @@ class FileSystemHelper(object):
     """
     Helper to save some data to a file
     """
-    def saveToFile(self, file, content):
+    def saveToFile(self, fname, content):
         try:
-            f = open(file, 'w')
+            f = open(fname, 'w')
             f.write(content)
             f.close()
             return True
@@ -92,15 +95,15 @@ class FileSystemHelper(object):
     Helper to get the file name given a path to a file
     """
     def getFileNameFromPath(self, path):
-        path,file=os.path.split(path)
-        return file
+        p,f = os.path.split(path)
+        return f
     
     """
     Helper to get path from a file with path location
     """
     def getPathFromFilePath(self, path):
-        path,file=os.path.split(path)
-        return path
+        p,f = os.path.split(path)
+        return p
     
     """
     Deletes a file or directory at the specified location
@@ -116,4 +119,5 @@ class FileSystemHelper(object):
                 os.remove(path)
             return True
         except:
+            g.feedback.log(LogLevels.ERROR, "Unable to delete file or directory at %s" % path)
             return False
