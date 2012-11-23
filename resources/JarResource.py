@@ -14,4 +14,10 @@ class JarResource(ArchiveResource):
         return super(JarResource, self).doDownload(source, None)
     
     def doInstall(self):
-        return super(JarResource, self).doInstall(True)
+        # Download and extract
+        super(JarResource, self).doInstall(True)
+        
+        # Rename the file from the current one to what it should be
+        current = self.getPathFromFilePath(self.properties["Path"]) + self.getDirectorySeparator() + self.filename.replace(".pack.gz", "")
+        new = self.properties["Path"]
+        return self.rename(current, new)
