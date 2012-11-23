@@ -13,8 +13,7 @@
 			"Name": "The test file",
 			"Description": "File we need",
 			"Properties": {
-				"Source": "http://www.google.com/humans.txt",
-				"Path": "lalala/google.txt"
+				"Source": "http://www.google.com/humans.txt"
 			},
 			"Conditions": {
 				"Platform": "LIN",
