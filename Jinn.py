@@ -92,7 +92,6 @@ A Java installer"""
             # Make the jinn install directory
             dir = self.getInstallTargetDirectory()
             if not self.makeDirectory(dir):
-                g.feedback.log(LogLevels.ERROR, "Unable to make directory %s" % dir)
                 return 1
             
             # Copy this binary into it
@@ -126,7 +125,6 @@ A Java installer"""
         g.feedback.log(LogLevels.DEBUG, "Installing")
         
         if not self.makeDirectory(".jinn"):
-            g.feedback.log(LogLevels.ERROR, "Unable to make .jinn directory")
             return 1
         
         if not self.manifest.save():
