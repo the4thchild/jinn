@@ -38,14 +38,17 @@ class CompressionHelper(FileSystemHelper):
     def decompress(self, filename, nameforcompression, path = "."):
         t = self.getCompressionType(nameforcompression)
         
+        if t is None:
+            # Found no compression, so don't need to do anything
+            g.feedback.log(LogLevels.DEBUG, "File %s does not have any compression on it" % filename)
+            return True
+        
         # Make the directory to extract to if it does not yet exist
         if path is not ".":
-            self.makeDirectory(path)
+            if not self.makeDirectory(path):
+                return False
             
-        if t is None:
-            g.feedback.log(LogLevels.WARN, "File %s does not have any compression on it" % filename)
-            return False
-        elif t is CompressionType.ZIP:
+        if t is CompressionType.ZIP:
             # TODO: Test this works
             ZipFile(filename).extractall(path)
             return True
