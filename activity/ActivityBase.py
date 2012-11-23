@@ -21,6 +21,12 @@ class ActivityBase(CompressionHelper):
     # The architecture context we are running in
     arch = None
     
+    # The manifest of the installation
+    manifest = None
+    
+    def loadManifest(self, manifest):
+        self.manifest = manifest
+    
     """
     Provides the ability to load properties from configuration file
     """

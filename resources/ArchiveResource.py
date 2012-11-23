@@ -24,7 +24,7 @@ class ArchiveResource(FileResource):
             else:
                 path = "."
                 
-            if not self.decompress(fname, self.properties["Source"], path):
+            if not self.decompress(fname, self.properties["Source"], path, pathIsFile):
                 return False
             # Once we have decompressed it, delete the downloaded archive
             if not self.delete(fname):

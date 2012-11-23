@@ -10,6 +10,9 @@ General code which applies to all activity wrappers
 """
 class ActivityWrapper(object):
     
+    # The manifest this activity is in
+    manifest = None
+    
     # The data for the activity (from config file)
     data = None
     
@@ -69,6 +72,7 @@ class ActivityWrapper(object):
     def loadPropertiesObject(self, module):
         self.type = self.getClass(module, self.data["Type"])
         self.type.loadProperties(self.data["Properties"])
+        self.type.loadManifest(self.manifest)
     
     """
     Checks the conditions on the wrapper to make sure it is valid
@@ -97,7 +101,8 @@ class ActivityWrapper(object):
     """
     Constructor which gets the data, OS and architecture
     """
-    def __init__(self, data, os, arch):
+    def __init__(self, manifest, data, os, arch):
+        self.manifest = manifest
         self.data = data
         self.os = os
         self.arch = arch
