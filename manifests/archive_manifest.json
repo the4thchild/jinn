@@ -1,0 +1,28 @@
+{
+	"Jinn": {
+		"AppName": "derp",
+        "Version" : "XXX",
+        "Source"  : "http://blah.com/1.1/jinn.zip",
+        "Updater" : "http://blah.com/1.1/jinn-updater.exe"
+    },
+	"Description": "File resource test",
+	"Resources": {
+	
+		"MyFle": {
+			"Type": "Jinn::Resource::Archive",
+			"Name": "The test file",
+			"Description": "File we need",
+			"Properties": {
+				"Source": "http://pkgs.fedoraproject.org/repo/pkgs/ldd-pdf/examples.tar.gz/330d478a64fea5f772645c3728a4e2df/examples.tar.gz",
+				"Path": "HerpyDerpy"
+			},
+			"Conditions": {
+				"Platform": "LIN",
+				"Architecture": "x64"
+			},
+			"Version": "1.0.0"
+		}
+	},
+	"Actions": {
+	}
+}
