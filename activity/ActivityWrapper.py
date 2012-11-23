@@ -13,6 +13,9 @@ class ActivityWrapper(object):
     # The manifest this activity is in
     manifest = None
     
+    # The id of this activity from the config
+    id = None
+    
     # The data for the activity (from config file)
     data = None
     
@@ -99,9 +102,16 @@ class ActivityWrapper(object):
         return True
     
     """
+    Return the ID of the activity
+    """
+    def getId(self):
+        return self.id
+    
+    """
     Constructor which gets the data, OS and architecture
     """
-    def __init__(self, manifest, data, os, arch):
+    def __init__(self, id, manifest, data, os, arch):
+        self.id = id
         self.manifest = manifest
         self.data = data
         self.os = os

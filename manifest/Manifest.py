@@ -1,5 +1,4 @@
 import sys
-import g
 from loader.FileLoader import FileLoader
 from loader.UrlLoader import UrlLoader
 from manifest.exceptions import ManifestException
@@ -9,7 +8,6 @@ from action.ActionWrapper import ActionWrapper
 from env.enums import *
 from helpers.FileSystemHelper import FileSystemHelper
 import json
-from feedback.LogLevels import LogLevels
 
 class Manifest(FileSystemHelper):
     
@@ -74,7 +72,7 @@ class Manifest(FileSystemHelper):
             i = 0
             dataResources = self.data["Resources"]
             for k in dataResources.keys():
-                res = ResourceWrapper(self, dataResources[k], OperatingSystem.LIN, Architecture.x64)
+                res = ResourceWrapper(k, self, dataResources[k], OperatingSystem.LIN, Architecture.x64)
                 if res.checkConditions():
                     self.resources.append(res)
                 i += 1
@@ -90,7 +88,7 @@ class Manifest(FileSystemHelper):
         try:
             dataActions = self.data["Actions"]
             for k in dataActions.keys():
-                action = ActionWrapper(dataActions[k], OperatingSystem.LIN, Architecture.x64)
+                action = ActionWrapper(k, self, dataActions[k], OperatingSystem.LIN, Architecture.x64)
                 if action.checkConditions():
                     self.actions.append(action)
         except KeyError:
@@ -107,26 +105,28 @@ class Manifest(FileSystemHelper):
     """
     def installResources(self):
         for res in self.resources:
-            g.feedback.log(LogLevels.DEBUG, "Installing: %s" % res.name)
             if not res.doInstall():
                 return False
         return True
     
     """
     Helper which returns a resource which has a specific type
+    Returns the inner type, not the wrapper!
     """
-    def getResourceForType(self, type):
+    def getResourceForType(self, t):
         for res in self.resources:
-            if res.type.getType() == type:
+            if res.type.getType() == t:
                 return res.type
         return None
             
     """
     Returns a resource given its ID
+    Returns the wrapper
     """
-    def getResourceForId(self, id):
-        if id in self.resources:
-            return self.resources[id]
+    def getResourceForId(self, i):
+        for res in self.resources:
+            if res.getId() == i:
+                return res
         return None
     
     """

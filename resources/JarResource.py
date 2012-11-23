@@ -13,6 +13,16 @@ class JarResource(ArchiveResource):
     def doDownload(self, source, path):
         return super(JarResource, self).doDownload(source, None)
     
+    """
+    Override makeDirectory, because we know we will have a file,
+    so we need to stop that from being made a directory
+    """
+    def makeDirectory(self, directory):
+        path = self.getPathFromFilePath(directory)
+        if len(path) < 1:
+            return True
+        return super(JarResource, self).makeDirectory(path)
+    
     def doInstall(self):
         # Download and extract
         super(JarResource, self).doInstall(True)
