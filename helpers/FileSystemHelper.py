@@ -34,7 +34,7 @@ class FileSystemHelper(object):
     """
     def makeDirectory(self, directory):
         try:
-            if not os.path.exists(directory):
+            if not os.path.isdir(directory):
                 os.makedirs(directory)
             return True
         except:
