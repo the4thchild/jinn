@@ -15,7 +15,7 @@ class CompressionHelper(FileSystemHelper):
     def getCompressionType(self, filename):
         if filename.endswith(".tar.gz"):
             return CompressionType.TARGZ
-        elif filename.endswith(".pack.jar"):
+        elif filename.endswith(".pack.gz"):
             return CompressionType.PACK200
         elif filename.endswith(".zip"):
             return CompressionType.ZIP

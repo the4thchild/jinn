@@ -7,9 +7,9 @@ class ArchiveResource(FileResource):
     def getType(self):
         return "Jinn::Resource::Archive"
     
-    def doInstall(self):
+    def doInstall(self, pathIsFile = False):
         # Do the download with the file resource
-        super(ArchiveResource, self).doInstall(False)
+        super(ArchiveResource, self).doInstall(pathIsFile)
         
         # Get the downloaded filename
         fname = self.filename
