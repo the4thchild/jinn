@@ -8,9 +8,11 @@ class FileResource(ResourceBase):
         return "Jinn::Resource::File"
     
     def doInstall(self):
-        path = self.getPathFromFilePath(self.properties["Path"])
-        if len(path) > 0 and not self.makeDirectory(path):
-            g.feedback.log(LogLevels.ERROR, "Unable to create path %s" % path)
+        if "Path" in self.properties:
+            path = self.getPathFromFilePath(self.properties["Path"])
+        else:
+            path = None
+        if path is not None and not self.makeDirectory(path):
             return False
-        self.doDownload(self.properties["Source"], self.properties["Path"])
+        self.doDownload(self.properties["Source"], path)
         return True
