@@ -121,3 +121,15 @@ class FileSystemHelper(object):
         except:
             g.feedback.log(LogLevels.ERROR, "Unable to delete file or directory at %s" % path)
             return False
+        
+    """
+    Rename a file or directory
+    Deletes the target first if it exists
+    """
+    def rename(self, frm, to):
+        try:
+            self.delete(to)
+            os.rename(frm, to)
+            return True
+        except:
+            return False
