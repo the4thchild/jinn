@@ -1,6 +1,4 @@
-import g
 from resource.ResourceBase import ResourceBase
-from feedback.LogLevels import LogLevels
 
 class FileResource(ResourceBase):
     

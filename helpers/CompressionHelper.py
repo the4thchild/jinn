@@ -80,10 +80,13 @@ class CompressionHelper(FileSystemHelper):
                 g.feedback.log(LogLevels.ERROR, "Pack200 not available, JRE found but unable to find unpack200 in the bin path: %s" % unpacker)
                 return False
             
-            cmd = unpacker + " " + filename + " " + self.getPathFromFilePath(path) + self.getDirectorySeparator() + filename.replace(".pack.gz", "")
+            filepath = self.getPathFromFilePath(path)
+            if len(filepath) > 0:
+                filepath = filepath + self.getDirectorySeparator()
+            cmd = unpacker + " " + filename + " " + filepath + filename.replace(".pack.gz", "")
             res = os.system(cmd)
             if res > 0:
-                g.feedback.log(LogLevels.ERROR, "Return code from unpacker is %s, unpack command: " % (res, cmd))
+                g.feedback.log(LogLevels.ERROR, "Return code from unpacker is %s, unpack command: %s" % (res, cmd))
                 return False
             else:
                 return True
