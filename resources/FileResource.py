@@ -4,15 +4,18 @@ from feedback.LogLevels import LogLevels
 
 class FileResource(ResourceBase):
     
+    # The file name for the downloaded resource
+    filename = None
+    
     def getType(self):
         return "Jinn::Resource::File"
     
-    def doInstall(self):
-        if "Path" in self.properties:
+    def doInstall(self, usePath = True):
+        if "Path" in self.properties and usePath:
             path = self.getPathFromFilePath(self.properties["Path"])
         else:
             path = None
         if path is not None and not self.makeDirectory(path):
             return False
-        self.doDownload(self.properties["Source"], path)
+        self.filename = self.doDownload(self.properties["Source"], path)
         return True
