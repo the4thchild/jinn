@@ -71,9 +71,15 @@ A Java installer"""
             g.feedback.log(LogLevels.ERROR, "Cannot run action %s, this jinn is not installed" % action)
             g.feedback.userMessage("Installation failed (2) - please contact distributor")
             return 1
+        else:
+            self.loadManifest()
             
         g.feedback.log(LogLevels.DEBUG, "Run action %s" % action)
-        return 0
+        try:
+            self.manifest.runAction(action)
+            return 0
+        except:
+            return 1
     
     """
     Are we in dev mode?
@@ -149,7 +155,7 @@ A Java installer"""
     def doUninstall(self):
         if not self.isInstalled():
             g.feedback.log(LogLevels.ERROR, "This jinn is not installed, so cannot be uninstalled")
-            g.feedback.userMessage("Installation failed (4) - please contact distributor")
+            g.feedback.userMessage("Uninstallation failed (4) - please contact distributor")
             return 1
 
         g.feedback.log(LogLevels.DEBUG, "Uninstalling")
