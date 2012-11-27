@@ -102,8 +102,8 @@ A Java installer"""
             g.feedback.log(LogLevels.DEBUG, "We are not in the correct directory, so changing to that")
             
             # Make the jinn install directory
-            dir = self.getInstallTargetDirectory()
-            if not self.makeDirectory(dir):
+            d = self.getInstallTargetDirectory()
+            if not self.makeDirectory(d):
                 return 1
             
             # Copy this binary into it
