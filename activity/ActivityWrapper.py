@@ -47,8 +47,8 @@ class ActivityWrapper(object):
         clazzes = inspect.getmembers(sys.modules[module], inspect.isclass)
         for clazzdef in clazzes:
             clazz = clazzdef[1]
-            obj = clazz(self.os, self.arch)
             try:
+                obj = clazz(self.os, self.arch)
                 attr = getattr(obj, "getType")
                 if callable(attr):
                     clazztype = obj.getType()
