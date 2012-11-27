@@ -1,0 +1,48 @@
+{
+    "Jinn": {
+    	"AppName": "NPAPI resource",
+        "Version": "0.1",
+        "Source": "",
+        "Updater": ""
+    },
+    "Platforms": {
+        "LIN": [
+            "x32",
+            "x64"
+        ],
+        "OSX": [
+            "x64"
+        ],
+        "WIN": [
+            "x32",
+            "x64"
+        ]
+    },
+    "Description": "NPAPI",
+    "Resources": {
+		"BrowserPlugin": {
+		    "Type": "Jinn::Resource::NPAPIPlugin",
+		    "Name": "Browser Plugin",
+		    "Version": 1,
+		    "Properties": {
+		        "Source": { "Platform": {
+		        		"WIN": {
+		        			"x32": "https://s3.amazonaws.com/importio/ImportioPlugin/npImportioPlugin.dll",
+		        			"x64": "https://s3.amazonaws.com/importio/ImportioPlugin/npImportioPlugin.dll"
+		        		},
+		        		"OSX": {
+		        			"x64": "https://s3.amazonaws.com/importio/ImportioPlugin/npImportioPlugin.mac"
+		        		},
+		        		"LIN": {
+		        			"x32": "https://s3.amazonaws.com/importio/ImportioPlugin/npImportioPlugin.so",
+		        			"x64": "https://s3.amazonaws.com/importio/ImportioPlugin/npImportioPlugin.so"
+		        		}
+		        	}
+		        },
+		        "Path": "plugins"
+		    }
+		}
+    },
+    "Actions": {
+    }
+}
