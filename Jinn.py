@@ -91,19 +91,16 @@ A Java installer"""
         return options.version is "DEV"
 
     """
-    Runs an installation of this jinn
+    Copy this executable to the target directory, then run it
     """
-    def doInstall(self):
-        # We need the manifest first of all
-        self.loadManifest()
+    def doCopy(self):
+        g.feedback.log(LogLevels.DEBUG, "We are not in the correct directory, so installing to the correct location")
         
-        # Hard code here to not happen for dev
-        if not self.isCorrectDirectory() and not self.isDevMode():
-            g.feedback.log(LogLevels.DEBUG, "We are not in the correct directory, so changing to that")
-            
+        if not self.exists(self.getInstallTargetFile()):
             # Make the jinn install directory
             d = self.getInstallTargetDirectory()
             if not self.makeDirectory(d):
+                g.feedback.log(LogLevels.ERROR, "Unable to make directory %s to install to" % d)
                 return 1
             
             # Copy this binary into it
@@ -112,16 +109,29 @@ A Java installer"""
             if not self.copyFile(frm, to):
                 g.feedback.log(LogLevels.ERROR, "Unable to copy %s to %s" % (frm,to))
                 return 1
-            
-            # Change into that directory
-            if not self.changeDirectory(self.getInstallTargetDirectory()):
-                g.feedback.log(LogLevels.ERROR, "Unable to change to the InstallTargetDirectory")
-                return 1
-            
-            # Run the new executable
-            g.feedback.log(LogLevels.DEBUG, "Code copied to %s, executing" % to)
-            os.system("./" + self.getExecutableName())
-            return 0
+        
+        # Change into that directory
+        if not self.changeDirectory(self.getInstallTargetDirectory()):
+            g.feedback.log(LogLevels.ERROR, "Unable to change to the InstallTargetDirectory")
+            return 1
+        
+        # Run the new executable
+        g.feedback.log(LogLevels.DEBUG, "Code copied to %s, executing" % to)
+        cmd = "./" + self.getExecutableName() + " -install"
+        g.feedback.log(LogLevels.DEBUG, "Run command: %s" % cmd)
+        os.system(cmd)
+        return 0
+
+    """
+    Runs an installation of this jinn
+    """
+    def doInstall(self):
+        # We need the manifest first of all
+        self.loadManifest()
+        
+        # Hard code here to not happen for dev
+        if not self.isCorrectDirectory() and not self.isDevMode():
+            return self.doCopy()
     
         # Make sure we are in the right directory
         installDir = self.getInstallTargetDirectory()
@@ -130,7 +140,7 @@ A Java installer"""
             return 1
         
         if self.isInstalled():
-            g.feedback.log(LogLevels.ERROR, "This jinn is already insalled")
+            g.feedback.log(LogLevels.ERROR, "This jinn is already installed")
             g.feedback.userMessage("Installation failed (3) - please contact distributor")
             return 1
         

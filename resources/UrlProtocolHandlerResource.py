@@ -46,11 +46,11 @@ MimeType=x-scheme-handler/%s
             
         name = g.jinn.manifest.jinn.name
         description = g.jinn.manifest.description
-        executable = self.getCurrentFile()
+        executable = g.jinn.getExecutableName()
+        if g.jinn.isDevMode():
+            executable = "python " + self.getCurrentFile()
         if action is not None:
             executable = executable + " -action " + action["Ref"]
-        if g.jinn.isDevMode():
-            executable = "python " + executable
         
         if self.os is OperatingSystem.LIN:
             a = self.saveToFile(self.getLinuxFileDirectory() + self.sep() + self.getLinuxFileName(protocol), self.getLinuxFileContents(terminal, executable, name, description, protocol))
