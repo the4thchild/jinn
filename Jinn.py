@@ -21,6 +21,9 @@ class Jinn(FileSystemHelper):
     # The new manifest, as loaded from the remote URL
     new_manifest = None
     
+    # The loaded manifest
+    manifest = None
+    
     # Header for messages
     header = """
     .---.                           
@@ -238,6 +241,10 @@ Options:
     Runs the jinn feature we need to perform
     """
     def do(self):
+        
+        # Change to the current run directory
+        self.changeDirectory(self.getPathFromFilePath(sys.argv[0]))
+        
         # Analyse the sys args to figure out what to do
         if len(sys.argv) < 2:
             # No extra args, want to run the default action
