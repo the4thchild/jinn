@@ -8,12 +8,15 @@ class FileResource(ResourceBase):
     def getType(self):
         return "Jinn::Resource::File"
     
-    def doInstall(self, usePath = True):
-        if "Path" in self.properties and usePath:
+    def doInstall(self, path = None, name = None):
+        if path is None and "Path" in self.properties:
             path = self.getProperty("Path")
-        else:
-            path = None
+            
         if path is not None and not self.makeDirectory(path):
             return False
-        self.filename = self.doDownload(self.getProperty("Source"), path)
+        
+        if name is None and "Name" in self.properties:
+            name = self.getProperty("Name")
+        
+        self.filename = self.doDownload(self.getProperty("Source"), path, name)
         return True

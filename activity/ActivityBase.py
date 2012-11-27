@@ -83,15 +83,18 @@ class ActivityBase(CompressionHelper):
         
     """
     Helper function which does a download from a URL to a file
-    If no file specfied, falls back to the filename from the URL
-    If not available, falls back to a MD5 hash of the URL
+    If no path specified, goes to the project root
+    If no name specified, falls back to a name from the URL. If that is not available, uses an MD5 of the URL
     """
-    def doDownload(self, url, f = None):
-        if f is None:
-            u,f = url.rsplit("/", 1)
-            if len(f) < 1:
-                f = hashlib.md5(url).hexdigest()
-        if self.exists(f):
-            self.delete(f)
+    def doDownload(self, url, path, name):
+        if path is None:
+            path = "."
+        if name is None:
+            u,name = url.rsplit("/", 1)
+            if len(name) < 1:
+                name = hashlib.md5(url).hexdigest()
+        fullPath = path + self.getDirectorySeparator() + name
+        if self.exists(fullPath):
+            self.delete(fullPath)
         downloader = UrlDownloader(url)
-        return downloader.download(f)
+        return downloader.download(fullPath)

@@ -4,29 +4,39 @@ import g
 
 class ArchiveResource(FileResource):
     
+    # Filename is the name of the file that has been downloaded
+    filename = None
+    
     def getType(self):
         return "Jinn::Resource::Archive"
     
-    def doInstall(self, pathIsFile = False):
-        # Do the download with the file resource
-        super(ArchiveResource, self).doInstall(pathIsFile)
+    def doInstall(self, path = None, name = None):
+        # Set up a tmpname to download to, if name is provided
+        if name is not None:
+            tmpname = name + "tmp"
+        else:
+            tmpname = name
         
-        # Get the downloaded filename
-        fname = self.filename
+        # Do the download with the file resource
+        super(ArchiveResource, self).doInstall(path, tmpname)
         
         # Check if there is compression. If so, decompress it
-        if self.getCompressionType(self.getProperty("Source")) is not None:
-            g.feedback.log(LogLevels.DEBUG, "File is compressed so decompressing")
+        source = self.getProperty("Source")
+        if self.getCompressionType(source) is not None:
+            g.feedback.log(LogLevels.DEBUG, "File from %s is compressed so decompressing" % source)
             
             # Get the right path value
-            if "Path" in self.properties:
+            if path is None and "Path" in self.properties:
                 path = self.getProperty("Path")
             else:
                 path = "."
                 
-            if not self.decompress(fname, self.getProperty("Source"), path, pathIsFile):
+            if name is None and "Name" in self.properties:
+                name = self.getProperty("Name")
+                
+            if not self.decompress(self.filename, self.getProperty("Source"), path, name):
                 return False
             # Once we have decompressed it, delete the downloaded archive
-            if not self.delete(fname):
+            if not self.delete(self.filename):
                 return False
         return True
