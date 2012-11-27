@@ -89,13 +89,31 @@ class FileSystemHelper(object):
     Helper to save some data to a file
     """
     def saveToFile(self, fname, content):
+        return self.workWithFile(fname, content, "w")
+        
+    """
+    Append content to a file
+    """
+    def appendToFile(self, fname, content):
+        return self.workWithFile(fname, content, "a")
+        
+    """
+    General file helper
+    """
+    def workWithFile(self, fname, content, mode):
         try:
-            f = open(fname, 'w')
+            f = open(fname, mode)
             f.write(content)
             f.close()
             return True
         except:
             return False
+    
+    """
+    Remove a specific content string from the specified file
+    """
+    def removeFromFile(self, fname, content):
+        pass
         
     """
     Helper to get the file name given a path to a file

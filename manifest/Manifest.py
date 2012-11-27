@@ -107,8 +107,11 @@ class Manifest(FileSystemHelper):
     """
     Run the specified action
     """
-    def runAction(self, action):
-        pass
+    def runAction(self, actionName):
+        for action in self.actions:
+            if action.id == actionName:
+                return action.run()
+        return False
     
     """
     Save the raw manifest data to the manifest fil
