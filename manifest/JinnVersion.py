@@ -1,21 +1,16 @@
 from manifest.exceptions import VersionDataMissingException
 
 class JinnVersion(object):
-    
-    # Data for the version from the configuration
-    data = None
-    
-    # The name of the jinn
-    name = None
-    
-    # The version of the jinn
-    version = None
-    
-    # The source of the jinn (URL)
-    source = None
-    
-    # The updater to update the jinn
-    updater = None
+
+    def __init__(self, data):
+        self.name = None
+        self.version = None
+        self.source = None
+        self.updater = None
+        
+        self.data = data;
+        
+        self.load()
     
     def load(self):
         try:
@@ -25,7 +20,3 @@ class JinnVersion(object):
             self.updater = self.data["Updater"]
         except KeyError as e:
             raise VersionDataMissingException("Unable to find the required key %s" % e)
-    
-    def __init__(self, data):
-        self.data = data;
-        self.load()

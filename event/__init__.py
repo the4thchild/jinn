@@ -3,10 +3,7 @@ An event class which allows events to be registered and called
 Based on http://www.valuedlessons.com/2008/04/events-in-python.html
 """
 class Event(object):
-    
-    # A set of handlers for the event
-    handlers = None
-    
+
     """
     Initialises the event
     """

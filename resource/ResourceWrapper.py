@@ -7,18 +7,14 @@ from feedback.LogLevels import LogLevels
 Resource object which represents a basic resource wrapper
 """
 class ResourceWrapper(ActivityWrapper):
-    
-    # Version of the resource
-    version = None
-    
-    # Dependencies, if any
-    depends = None
-    
-    # Whether or not we are installed
-    isInstalled = False
-    
-    # Whether we are currently installing
-    isInstalling = False
+ 
+    def __init__(self, id, manifest, data, os, arch):
+        self.isInstalled = False
+        self.isInstalling = False
+        self.depends = None
+        self.version = None
+        
+        super(ResourceWrapper, self).__init__(id, manifest, data, os, arch)
     
     """
     Load our data from the object into the class
@@ -32,6 +28,9 @@ class ResourceWrapper(ActivityWrapper):
                 self.depends = self.data["Depends"]
         except KeyError as e:
             raise ResourceDataMissingException("Unable to find the required key %s" % e)
+        
+    def setInstalled(self, installed):
+        self.isInstalled = installed
         
     """
     Install this resource
@@ -81,6 +80,46 @@ class ResourceWrapper(ActivityWrapper):
             self.isInstalled = True
         else:
             g.feedback.log(LogLevels.DEBUG, "Installation of %s failed" % self.id)
+            
+        self.isInstalling = False
+        return res
+    
+    """
+    Uninstall this resource
+    """
+    def doUninstall(self):
+        
+        # Pre-check to make sure we haven't been uninstalled already
+        if not self.isInstalled:
+            g.feedback.log(LogLevels.DEBUG, "Skipping uninstallation of %s, it is already uninstalled" % self.id)
+            return True
+        
+        self.isInstalling = True
+        
+        g.feedback.log(LogLevels.DEBUG, "Resolving dependencies of %s" % self.id)
+        
+        # Check dependencies and uninstall that first
+        for res in self.manifest.resources:
+            if res.depends is not None:
+                deps = res.depends
+                if not type(deps) is list:
+                    deps = [deps]
+                for dep in deps:
+                    if dep == self.id and res.isInstalled:
+                        # Uninstall if it depends on us
+                        uninst = res.doUninstall()
+                        if not uninst:
+                            g.feedback.log(LogLevels.ERROR, "Unable to uninstall %s, dependency %s failed to uninstall" % (self.id, res.name))
+                            return False
+        
+        g.feedback.log(LogLevels.DEBUG, "Beginning uninstallation of %s" % self.id)
+        
+        res = self.type.doUninstall()
+        if res:
+            g.feedback.log(LogLevels.DEBUG, "Uninstallation of %s succeeded" % self.id)
+            self.isInstalled = False
+        else:
+            g.feedback.log(LogLevels.DEBUG, "Uninstallation of %s failed" % self.id)
             
         self.isInstalling = False
         return res

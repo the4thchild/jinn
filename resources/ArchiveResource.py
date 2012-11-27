@@ -4,9 +4,6 @@ import g
 
 class ArchiveResource(FileResource):
     
-    # Filename is the name of the file that has been downloaded
-    filename = None
-    
     def getType(self):
         return "Jinn::Resource::Archive"
     
@@ -40,3 +37,10 @@ class ArchiveResource(FileResource):
             if not self.delete(self.filename):
                 return False
         return True
+    
+    def doUninstall(self):
+        # If we have a path, we can specifically delete it, otherwise will have to be cleaned up later
+        if "Path" in self.properties:
+            return self.delete(self.getProperty("Path"))
+        else:
+            g.feedback.log(LogLevels.DEBUG, "Archive does not have a path specified so can't auto-delete, will be cleaned up later")

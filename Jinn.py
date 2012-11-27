@@ -15,12 +15,6 @@ from helpers.FileSystemHelper import FileSystemHelper
 
 class Jinn(FileSystemHelper):
     
-    # The new manifest, as loaded from the remote URL
-    new_manifest = None
-    
-    # The current manifest in operation
-    manifest = None
-    
     # Header for messages
     header = """
     .---.                           
@@ -37,6 +31,20 @@ class Jinn(FileSystemHelper):
 |      '     |  |   |  ||  |   |  | 
 |____.'      '--'   '--''--'   '--' 
 A Java installer"""
+
+    def __init__(self):
+        self.new_manifest = None
+        self.manifest = None
+        
+        # Setup feedback mechanism
+        global feedback
+        if (options.interface == FeedbackMechanisms.CMD):
+            g.feedback = ConsoleFeedback()
+        elif (options.interface == FeedbackMechanisms.UI):
+            g.feedback = UIFeedback()
+        else:
+            # Not specified, need something to stop errors, so us this
+            g.feedback = FeedbackBase()
     
     def loadManifest(self):
                 
@@ -46,7 +54,7 @@ A Java installer"""
         if self.isInstalled():
             manifest_file = ".jinn" + self.sep() + "current_manifest.json"
             g.feedback.log(LogLevels.DEBUG, "Loading manifest from %s" % manifest_file)
-            self.manifest = Manifest(manifest_file, False)
+            self.manifest = Manifest(manifest_file, False, True)
         else:
             g.feedback.log(LogLevels.DEBUG, "Loading manifest from new manifest, as not installed")
             self.manifest = self.new_manifest
@@ -177,7 +185,17 @@ A Java installer"""
             return 1
 
         g.feedback.log(LogLevels.DEBUG, "Uninstalling")
-        return 1
+        
+        self.loadManifest()
+        
+        try:
+            if self.manifest.uninstallResources():
+                return 0
+            else:
+                return 1
+        except Exception as e:
+            g.feedback.log(LogLevels.ERROR, "Unable to uninstall resources: %s" % e)
+            return 1
     
     """
     Returns the install target directory
@@ -277,22 +295,7 @@ Options:
                 g.feedback.userMessage("For -action, you must specify an action - try -help")
                 return 1
             return self.runAction(sys.argv[2])
-    
-    """
-    Initialises the Jinn class, which handles all of the application lifecycle
-    """
-    def __init__(self):
-        #manifest = Manifest(options.manifest, options.manifest_is_url)
-        
-        # Setup feedback mechanism
-        global feedback
-        if (options.interface == FeedbackMechanisms.CMD):
-            g.feedback = ConsoleFeedback()
-        elif (options.interface == FeedbackMechanisms.UI):
-            g.feedback = UIFeedback()
-        else:
-            # Not specified, need something to stop errors, so us this
-            g.feedback = FeedbackBase()
+
 
 """
 Main function that is run when the code is started from this file

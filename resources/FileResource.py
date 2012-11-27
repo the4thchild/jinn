@@ -2,8 +2,10 @@ from resource.ResourceBase import ResourceBase
 
 class FileResource(ResourceBase):
     
-    # The file name for the downloaded resource
-    filename = None
+    def __init__(self, os, arch):
+        self.filename = None
+        
+        super(FileResource, self).__init__(os, arch)
     
     def getType(self):
         return "Jinn::Resource::File"
@@ -20,3 +22,17 @@ class FileResource(ResourceBase):
         
         self.filename = self.doDownload(self.getProperty("Source"), path, name)
         return True
+    
+    def doUninstall(self):
+        # This will only ever be called on file downloads so we can delete from the known source/path/file
+        if "Path" in self.properties:
+            path = self.properties["Path"]
+        else:
+            path = "."
+            
+        if "Name" in self.properties:
+            name = self.properties["Name"]
+        else:
+            name = self.getFilenameFromUrl(self.getProperty("Source"))
+            
+        return self.delete(path + self.sep() + name)

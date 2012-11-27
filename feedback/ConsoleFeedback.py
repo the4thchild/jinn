@@ -8,6 +8,7 @@ class ConsoleFeedback(FeedbackBase):
     """
     def __init__(self):
         super(ConsoleFeedback, self).__init__()
+        
         self.progressChangeEvent += self.progressChange
         
     """
