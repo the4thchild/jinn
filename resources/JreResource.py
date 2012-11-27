@@ -9,15 +9,16 @@ class JreResource(ResourceBase):
         if not "Path" in self.properties:
             return "jre"
         else:
-            return self.properties["Path"]
+            return self.getProperty("Path")
     
     def doInstall(self):
+        return True
         # TODO: Change this to use the other downloaders/extracters
-        f = self.doDownload(self.properties["Source"])
+        f = self.doDownload(self.getProperty("Source"))
         if not "Path" in self.properties:
             self.properties["Path"] = "jre"
         # Delete the target dir if it exists already
-        self.delete(self.properties["Path"])
-        self.decompress(f, self.properties["Source"], self.properties["Path"])
+        self.delete(self.getProperty("Path"))
+        self.decompress(f, self.getProperty("Source"), self.getProperty("Path"))
         self.delete(f)
         return True
