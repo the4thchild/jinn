@@ -54,6 +54,12 @@ class FileSystemHelper(object):
         return os.sep
     
     """
+    Alias for getDirectorySeparator
+    """
+    def sep(self):
+        return self.getDirectorySeparator()
+    
+    """
     Change to the target directory
     """
     def changeDirectory(self, directory):
