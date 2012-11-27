@@ -95,6 +95,22 @@ class Manifest(FileSystemHelper):
             raise ManifestException("The manifest file does not contain any actions")
     
     """
+    Run the default action
+    Returns false if no default action
+    """
+    def runDefaultAction(self):
+        for action in self.actions:
+            if action.default:
+                return action.run()
+        return False
+    
+    """
+    Run the specified action
+    """
+    def runAction(self, action):
+        pass
+    
+    """
     Save the raw manifest data to the manifest fil
     """
     def save(self):

@@ -2,7 +2,7 @@ import sys
 import options
 import g
 import os
-#redundant import just for pyinstaller
+# Redundant import just for pyinstaller
 import encodings
 
 from feedback import FeedbackMechanisms
@@ -38,15 +38,14 @@ class Jinn(FileSystemHelper):
 |____.'      '--'   '--''--'   '--' 
 A Java installer"""
     
-    """
-    Runs the default action in the jinn
-    """
-
     def loadManifest(self):
         g.feedback.log(LogLevels.DEBUG, "Loading manifest from %s" % options.manifest)
         self.manifest = Manifest(options.manifest, options.manifest_is_url)
         g.feedback.log(LogLevels.DEBUG, "Manifest is %s" % self.manifest)
-
+    
+    """
+    Runs the default action in the jinn
+    """
     def runDefaultAction(self):
         if not self.isInstalled():
             status = self.doInstall()
@@ -58,7 +57,11 @@ A Java installer"""
             self.loadManifest()
         
         g.feedback.log(LogLevels.DEBUG, "Default action")
-        return 0
+        try:
+            self.manifest.runDefaultAction()
+            return 0
+        except:
+            return 1
     
     """
     Runs a specific action within the jinn
@@ -156,7 +159,10 @@ A Java installer"""
     Returns the install target directory
     """
     def getInstallTargetDirectory(self):
-        return self.getHomeDirectory() + self.getDirectorySeparator() + self.manifest.jinn.name
+        if self.isDevMode():
+            return self.getCurrentDirectory()
+        else:
+            return self.getHomeDirectory() + self.getDirectorySeparator() + self.manifest.jinn.name
 
     """
     Get the name of the executabl
@@ -181,7 +187,7 @@ A Java installer"""
         g.feedback.log(LogLevels.DEBUG, "Current directory: %s" % currentdir)
         g.feedback.log(LogLevels.DEBUG, "Target dir: %s" % targetdir)
         
-        return targetdir == currentdir
+        return targetdir is currentdir
     
     """
     Check whether or not this jinn is currently installed
@@ -264,8 +270,8 @@ Options:
 Main function that is run when the code is started from this file
 """
 def main():
-    jinn = Jinn()
-    return jinn.do()
+    g.jinn = Jinn()
+    return g.jinn.do()
 
 if __name__ == '__main__':
     status = main()

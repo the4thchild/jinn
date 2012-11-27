@@ -1,4 +1,4 @@
-manifest = "manifests/npapi_manifest.json"
+manifest = "manifests/runshell_manifest.json"
 # TODO: Get rid of this
 manifest_is_url = False
 interface = "cmd"

@@ -20,3 +20,9 @@ class ActionWrapper(ActivityWrapper):
                 self.default = self.data["Default"]
         except KeyError as e:
             raise ActionDataMissingException("Unable to find the required key %s" % e)
+        
+    """
+    Run this action
+    """
+    def run(self):
+        return self.type.run()

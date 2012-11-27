@@ -1,0 +1,62 @@
+{
+    "Jinn": {
+    	"AppName": "Run Shell",
+        "Version": "0.1",
+        "Source": "",
+        "Updater": ""
+    },
+    "Platforms": {
+        "LIN": [
+            "x32",
+            "x64"
+        ],
+        "OSX": [
+            "x64"
+        ],
+        "WIN": [
+            "x32",
+            "x64"
+        ]
+    },
+    "Description": "Run Shell",
+    "Resources": {
+    	"MyFle": {
+			"Type": "Jinn::Resource::File",
+			"Name": "The test file",
+			"Description": "File we need",
+			"Properties": {
+				"Source": "http://www.google.com/humans.txt"
+			},
+			"Conditions": {
+				"Platform": "LIN",
+				"Architecture": "x32"
+			},
+			"Version": "1.0.0"
+		}
+    },
+    "Actions": {
+    	"RunCmd": {
+    		"Type": "Jinn::Action::RunShell",
+    		"Name": "cmd",
+    		"Version": 1,
+    		"Default": true,
+    		"Properties": {
+    			"Command": {
+    				"Platform": {
+    					"WIN": {
+    						"x32": "dir",
+    						"x64": "dir"
+    					},
+    					"OSX": {
+    						"x64": "ls"
+    					},
+    					"LIN": {
+    						"x32": "ls",
+    						"x64": "echo \"testing 123\" > test"
+    					}
+    				}
+    			}
+    		}
+    	}
+    }
+}
