@@ -15,16 +15,16 @@ class ArchiveResource(FileResource):
         fname = self.filename
         
         # Check if there is compression. If so, decompress it
-        if self.getCompressionType(self.properties["Source"]) is not None:
+        if self.getCompressionType(self.getProperty("Source")) is not None:
             g.feedback.log(LogLevels.DEBUG, "File is compressed so decompressing")
             
             # Get the right path value
             if "Path" in self.properties:
-                path = self.properties["Path"]
+                path = self.getProperty("Path")
             else:
                 path = "."
                 
-            if not self.decompress(fname, self.properties["Source"], path, pathIsFile):
+            if not self.decompress(fname, self.getProperty("Source"), path, pathIsFile):
                 return False
             # Once we have decompressed it, delete the downloaded archive
             if not self.delete(fname):

@@ -81,6 +81,7 @@ class ActivityWrapper(object):
     Checks the conditions on the wrapper to make sure it is valid
     """
     def checkConditions(self):
+        # Check the conditions in the main object
         if "Conditions" in self.data:
             conditions = self.data["Conditions"]
             if "Platform" in conditions:
@@ -89,7 +90,7 @@ class ActivityWrapper(object):
                     platform = [platform]
                 os = OperatingSystem().getOperatingSystem(self.os)
                 if os not in platform:
-                    g.feedback.log(LogLevels.DEBUG, "Unable to find OS %s in Platforms %s" % (os, platform))
+                    g.feedback.log(LogLevels.DEBUG, "Unable to find OS %s in Platforms %s, so not installing activity %s" % (os, platform, self.name))
                     return False
             if "Architecture" in conditions:
                 architecture = conditions["Architecture"]
@@ -97,8 +98,32 @@ class ActivityWrapper(object):
                     architecture = [architecture]
                 arch = Architecture().getArchitecture(self.arch)
                 if arch not in architecture:
-                    g.feedback.log(LogLevels.DEBUG, "Unable to find architecture %s in Architectures %s" % (arch, architecture))
+                    g.feedback.log(LogLevels.DEBUG, "Unable to find architecture %s in Architectures %s, so not installing activity %s" % (arch, architecture, self.name))
                     return False
+        
+        # Check the conditions are available in all properties which are platform specific too
+        for name in self.properties:
+            prop = self.properties[name]
+            # See if property is a dict so must be a special object
+            if type(prop) is dict:
+                # Platform property type, so need to check we have the right one
+                if "Platform" in prop:
+                    plat = prop["Platform"]
+                    # Do we have the OS
+                    myos = OperatingSystem().getOperatingSystem(self.os)
+                    if myos in plat:
+                        opsys = plat[myos]
+                        # Do we have the architecture too
+                        myarch = Architecture().getArchitecture(self.arch)
+                        if myarch in opsys:
+                            # If we have the platform and architecture, we are good to continue
+                            continue
+                    if "Default" in plat:
+                        # If we have a default we are good to continue
+                        continue
+                    g.feedback.log(LogLevels.DEBUG, "OS/architecture combo %s / %s is not available in activity %s, property %s, so not installing this activity" % (OperatingSystem().getOperatingSystem(self.os), Architecture().getArchitecture(self.arch), self.name, name))
+                    return False
+        
         return True
     
     """

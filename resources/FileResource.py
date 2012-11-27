@@ -10,10 +10,10 @@ class FileResource(ResourceBase):
     
     def doInstall(self, usePath = True):
         if "Path" in self.properties and usePath:
-            path = self.properties["Path"]
+            path = self.getProperty("Path")
         else:
             path = None
         if path is not None and not self.makeDirectory(path):
             return False
-        self.filename = self.doDownload(self.properties["Source"], path)
+        self.filename = self.doDownload(self.getProperty("Source"), path)
         return True

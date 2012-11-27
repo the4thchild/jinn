@@ -28,6 +28,6 @@ class JarResource(ArchiveResource):
         super(JarResource, self).doInstall(True)
         
         # Rename the file from the current one to what it should be
-        current = self.getPathFromFilePath(self.properties["Path"]) + self.getDirectorySeparator() + self.filename.replace(".pack.gz", "")
-        new = self.properties["Path"]
+        current = self.getPathFromFilePath(self.getProperty("Path")) + self.getDirectorySeparator() + self.filename.replace(".pack.gz", "")
+        new = self.getProperty("Path")
         return self.rename(current, new)

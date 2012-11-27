@@ -116,7 +116,7 @@ class Manifest(FileSystemHelper):
     def getResourceForType(self, t):
         for res in self.resources:
             if res.type.getType() == t:
-                return res.type
+                return res
         return None
             
     """

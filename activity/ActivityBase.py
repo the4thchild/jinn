@@ -4,6 +4,9 @@ from loader.UrlDownloader import UrlDownloader
 from helpers.FileSystemHelper import FileSystemHelper
 import hashlib
 from helpers.CompressionHelper import CompressionHelper
+from activity.exceptions import RequiredPropertyNotFound
+from env.enums import OperatingSystem
+from env.enums import Architecture
 
 """
 A base class for Resources and Actions
@@ -33,6 +36,37 @@ class ActivityBase(CompressionHelper):
     def loadProperties(self, properties):
         self.properties = properties;
         #g.feedback.log(LogLevels.DEBUG, properties)
+        
+    """
+    Return a property from the properties
+    Allows specification for whether it is required or not
+    If required and not available, throws exception
+    If not required and not available, returns None
+    """
+    def getProperty(self, name, required = True):
+        if name in self.properties:
+            prop = self.properties[name]
+            # See if property is a dict so must be a special object
+            if type(prop) is dict:
+                # Platform property type, so need to return the right one
+                if "Platform" in prop:
+                    plat = prop["Platform"]
+                    # Do we have the OS
+                    myos = OperatingSystem().getOperatingSystem(self.os)
+                    if myos in plat:
+                        opsys = plat[myos]
+                        # Do we have the architecture too
+                        myarch = Architecture().getArchitecture(self.arch)
+                        if myarch in opsys:
+                            # If we have the platform and architecture, return the value
+                            return opsys[myarch]
+                    if "Default" in plat:
+                        return plat["Default"]
+            return prop
+        if required:
+            raise RequiredPropertyNotFound(name)
+        else:
+            return None
     
     """
     Return the type string this Activity corresponds to
