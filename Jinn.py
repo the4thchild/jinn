@@ -15,13 +15,10 @@ from helpers.FileSystemHelper import FileSystemHelper
 
 class Jinn(FileSystemHelper):
     
-    # The current manifest, as loaded from the filesystem
-    current_manifest = None
-    
     # The new manifest, as loaded from the remote URL
     new_manifest = None
     
-    # The loaded manifest
+    # The current manifest in operation
     manifest = None
     
     # Header for messages
@@ -42,9 +39,17 @@ class Jinn(FileSystemHelper):
 A Java installer"""
     
     def loadManifest(self):
-        g.feedback.log(LogLevels.DEBUG, "Loading manifest from %s" % options.manifest)
-        self.manifest = Manifest(options.manifest, options.manifest_is_url)
-        g.feedback.log(LogLevels.DEBUG, "Manifest is %s" % self.manifest)
+                
+        g.feedback.log(LogLevels.DEBUG, "Loading new manifest from %s" % options.manifest)
+        self.new_manifest = Manifest(options.manifest, options.manifest_is_url)
+        
+        if self.isInstalled():
+            manifest_file = ".jinn" + self.sep() + "current_manifest.json"
+            g.feedback.log(LogLevels.DEBUG, "Loading manifest from %s" % manifest_file)
+            self.manifest = Manifest(manifest_file, False)
+        else:
+            g.feedback.log(LogLevels.DEBUG, "Loading manifest from new manifest, as not installed")
+            self.manifest = self.new_manifest
     
     """
     Runs the default action in the jinn
