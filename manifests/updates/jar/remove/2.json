@@ -1,0 +1,24 @@
+{
+	"Jinn": {
+		"AppName": "UpdateJarRemoveExample",
+        "Version" : 2
+    },
+	"Description": "Update test, removing a Jar",
+	"Resources": {
+	
+		"ExampleFile": {
+			"Type": "Jinn::Resource::File",
+			"Name": "Test File",
+			"Description": "A basic sample file",
+			"Properties": {
+				"Source": "http://www.google.com/humans.txt",
+				"Path": "Sample",
+				"Name": "Humans.txt"
+			},
+			"Version": 1
+		}
+		
+	},
+	"Actions": {
+	}
+}

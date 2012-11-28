@@ -1,0 +1,35 @@
+{
+	"Jinn": {
+		"AppName": "UpdateJarRemoveExample",
+        "Version" : 1
+    },
+	"Description": "Update test, removing a Jar",
+	"Resources": {
+	
+		"ExampleFile": {
+			"Type": "Jinn::Resource::File",
+			"Name": "Test File",
+			"Description": "A basic sample file",
+			"Properties": {
+				"Source": "http://www.google.com/humans.txt",
+				"Path": "Sample",
+				"Name": "Humans.txt"
+			},
+			"Version": 1
+		},
+		
+		"ExampleJar": {
+            "Type": "Jinn::Resource::Jar",
+            "Name": "Sample Jar",
+            "Properties": {
+                "Source": "https://github.com/mars0i/uneof/raw/master/uneof.jar",
+                "Path": "Sample",
+                "Name": "example.jar"
+            },
+            "Version": 1
+        }
+		
+	},
+	"Actions": {
+	}
+}
