@@ -17,8 +17,6 @@ class NPAPIPluginResource(FileResource):
         return g.jinn.getInstallTargetDirectory() + self.sep() + self.filename
 
     def doInstall(self):
-        global jinn
-        
         # Download the file
         super(NPAPIPluginResource, self).doInstall()
         
@@ -27,6 +25,7 @@ class NPAPIPluginResource(FileResource):
             self.makeDirectory(targetdir)
             f = self.getLinuxTargetConfigFile()
             try:
+                self.delete(f)
                 os.symlink(f, target)
                 return True
             except:
