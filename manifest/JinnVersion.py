@@ -16,7 +16,5 @@ class JinnVersion(object):
         try:
             self.name = self.data["AppName"]
             self.version = self.data["Version"]
-            self.source = self.data["Source"]
-            self.updater = self.data["Updater"]
         except KeyError as e:
             raise VersionDataMissingException("Unable to find the required key %s" % e)
