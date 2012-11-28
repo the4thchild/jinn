@@ -60,9 +60,10 @@ A Java installer"""
             self.manifest = self.new_manifest
     
     """
-    Runs the default action in the jinn
+    A helper which sets up the system before a run
     """
-    def runDefaultAction(self):
+    def setupSystem(self):
+        # Make sure we are installed
         if not self.isInstalled():
             status = self.doInstall()
             if status != 0:
@@ -71,6 +72,14 @@ A Java installer"""
                 return status
         else:
             self.loadManifest()
+            
+        return self.doUpdate()
+    
+    """
+    Runs the default action in the jinn
+    """
+    def runDefaultAction(self):
+        self.setupSystem()
         
         g.feedback.log(LogLevels.DEBUG, "Default action")
         try:
@@ -83,12 +92,7 @@ A Java installer"""
     Runs a specific action within the jinn
     """
     def runAction(self, action):
-        if not self.isInstalled():
-            g.feedback.log(LogLevels.ERROR, "Cannot run action %s, this jinn is not installed" % action)
-            g.feedback.userMessage("Installation failed (2) - please contact distributor")
-            return 1
-        else:
-            self.loadManifest()
+        self.setupSystem()
             
         g.feedback.log(LogLevels.DEBUG, "Run action %s" % action)
         try:
@@ -102,6 +106,41 @@ A Java installer"""
     """
     def isDevMode(self):
         return options.version is "DEV"
+
+    """
+    Checks the manifests for updates
+    """
+    def doUpdate(self):
+        
+        # No update if the version number is the same
+        if self.manifest.jinn.version == self.new_manifest.jinn.version:
+            g.feedback.log(LogLevels.DEBUG, "New and current manifest versions are %s and %s, so skipping update as they are identical" % (self.manifest.jinn.version, self.new_manifest.jinn.version))
+            return True
+        
+        # Initially, set the resources that are installed on the new manifest already
+        if not self.new_manifest.setInstallStatus(self.manifest.resources):
+            return False
+        
+        # First, install resources that are new
+        if not self.new_manifest.installNewResources(self.manifest.resources):
+            return False
+        
+        # Second, uninstall resources that are gone
+        if not self.new_manifest.uninstallRemovedResources(self.manifest.resources):
+            return False
+        
+        # Third, update resources that are new version
+        if not self.new_manifest.updateResources(self.manifest.resources):
+            return False
+        
+        # Finally, transition the manifest over to the new one
+        self.manifest = self.new_manifest
+        if not self.manifest.save():
+            return False
+        
+        # Done!
+        return True
+            
 
     """
     Copy this executable to the target directory, then run it

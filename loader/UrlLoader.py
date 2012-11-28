@@ -7,7 +7,7 @@ class UrlLoader(LoaderBase):
         if self.cache == None:
             r = requests.get(self.location)
             if is_json:
-                self.cache = r.json()
+                self.cache = r.json
             else:
-                self.cache = r.text()
+                self.cache = r.text
         return self.cache

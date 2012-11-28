@@ -1,0 +1,23 @@
+{
+	"Jinn": {
+		"AppName": "UpdateJarUpdateExample",
+        "Version" : 1
+    },
+	"Description": "Update test, updating a Jar",
+	"Resources": {
+	
+		"ExampleJar": {
+            "Type": "Jinn::Resource::Jar",
+            "Name": "Sample Jar",
+            "Properties": {
+                "Source": "https://github.com/mars0i/uneof/raw/master/uneof.jar",
+                "Path": "Sample",
+                "Name": "new.jar"
+            },
+            "Version": 2
+        }
+		
+	},
+	"Actions": {
+	}
+}

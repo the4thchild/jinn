@@ -1,0 +1,36 @@
+{
+	"Jinn": {
+		"AppName": "UpdateArchiveUpdateDepsExample",
+        "Version" : 1
+    },
+	"Description": "Update test, updating an archive which has dependencies",
+	"Resources": {
+	
+		"ExampleFile": {
+			"Type": "Jinn::Resource::File",
+			"Name": "Test File",
+			"Description": "A basic sample file",
+			"Properties": {
+				"Source": "http://www.google.com/humans.txt",
+				"Path": "Sample/Archive/Humans",
+				"Name": "google-humans.txt"
+			},
+			"Version": 1,
+			"Depends": [{ "Ref": "ExampleArchive" }]
+		},
+		
+		"ExampleArchive": {
+			"Type": "Jinn::Resource::Archive",
+			"Name": "Archive",
+			"Description": "The archive",
+			"Properties": {
+				"Source": "http://pkgs.fedoraproject.org/repo/pkgs/ldd-pdf/examples.tar.gz/330d478a64fea5f772645c3728a4e2df/examples.tar.gz",
+				"Path": "Sample/Archive"
+			},
+			"Version": 1
+		}
+		
+	},
+	"Actions": {
+	}
+}
