@@ -12,7 +12,6 @@ class JreResource(ArchiveResource):
             return self.getProperty("Path")
     
     def doInstall(self):
-        return True
         return super(JreResource, self).doInstall()
     
     def doUninstall(self):

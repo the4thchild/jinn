@@ -190,11 +190,15 @@ A Java installer"""
         
         try:
             if self.manifest.uninstallResources():
-                return 0
+                if self.delete(".jinn"):
+                    g.feedback.userMessage("Uninstallation finished. To completely erase this application, please delete the directory %s" % self.getInstallTargetDirectory())
+                    return 0
+                else:
+                    return 1
             else:
                 return 1
         except Exception as e:
-            g.feedback.log(LogLevels.ERROR, "Unable to uninstall resources: %s" % e)
+            g.feedback.log(LogLevels.ERROR, "Unable to uninstall: %s" % e)
             return 1
     
     """
