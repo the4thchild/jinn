@@ -1,21 +1,14 @@
 from event import Event
+from feedback.LogLevels import LogLevels
 
 """
 Base class for feedback to the user
 """
-from feedback.LogLevels import LogLevels
 class FeedbackBase(object):
-    
-    # How much progress has been completed of the current progress operation
-    progressAmount = None
-    
-    # An event which allows registration of listeners for when the progress amount changes
-    progressChangeEvent = None
-    
-    """
-    Initialisation
-    """
+
     def __init__(self):
+        self.progressAmount = None
+        
         self.progressChangeEvent = Event()
     
     """

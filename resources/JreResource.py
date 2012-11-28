@@ -13,3 +13,6 @@ class JreResource(ArchiveResource):
     
     def doInstall(self):
         return super(JreResource, self).doInstall()
+    
+    def doUninstall(self):
+        return super(JreResource, self).doUninstall()

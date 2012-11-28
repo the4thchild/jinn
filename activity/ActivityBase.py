@@ -15,17 +15,12 @@ ActionBase and ResourceBase, can implement
 """
 class ActivityBase(CompressionHelper):
     
-    # Properties of this activity
-    properties = None
-    
-    # The OS context we are running in
-    os = None
-    
-    # The architecture context we are running in
-    arch = None
-    
-    # The manifest of the installation
-    manifest = None
+    def __init__(self, os, arch):
+        self.properties = None
+        self.manifest = None
+        
+        self.os = os
+        self.arch = arch
     
     def loadManifest(self, manifest):
         self.manifest = manifest
@@ -73,27 +68,33 @@ class ActivityBase(CompressionHelper):
     """
     def getType(self):
         return None
-    
-    """
-    Initialises the activity with the os and architecture we are running under
-    """
-    def __init__(self, os, arch):
-        self.os = os
-        self.arch = arch
         
+    """
+    Returns a name, if it exists, from a URL
+    """
+    def getFilenameFromUrl(self, url):
+        u,name = url.rsplit("/", 1)
+        return name
+
+    """
+    Returns the filename to use
+    """
+    def getFilename(self, url, path, name):
+        if path is None:
+            path = "."
+        if name is None:
+            name = self.getFilenameFromUrl(url)
+            if len(name) < 1:
+                name = hashlib.md5(url).hexdigest()
+        return path + self.getDirectorySeparator() + name
+
     """
     Helper function which does a download from a URL to a file
     If no path specified, goes to the project root
     If no name specified, falls back to a name from the URL. If that is not available, uses an MD5 of the URL
     """
     def doDownload(self, url, path, name):
-        if path is None:
-            path = "."
-        if name is None:
-            u,name = url.rsplit("/", 1)
-            if len(name) < 1:
-                name = hashlib.md5(url).hexdigest()
-        fullPath = path + self.getDirectorySeparator() + name
+        fullPath = self.getFilename(url, path, name)
         if self.exists(fullPath):
             self.delete(fullPath)
         downloader = UrlDownloader(url)

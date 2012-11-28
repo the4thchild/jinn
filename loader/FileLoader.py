@@ -3,11 +3,9 @@ from LoaderBase import LoaderBase
 
 class FileLoader(LoaderBase):
     
-    # The file handler object
-    file = None
-    
     def __init__(self, location):
         super(FileLoader, self).__init__(location)
+        
         self.file = open(self.location)
     
     def read(self, is_json = False):

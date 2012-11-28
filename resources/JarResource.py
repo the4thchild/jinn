@@ -2,11 +2,11 @@ from ArchiveResource import ArchiveResource
 
 class JarResource(ArchiveResource):
     
-    # The file name of the downloaded resource
-    filename = None
-    
     def getType(self):
         return "Jinn::Resource::Jar"
+
+    def getNewFileName(self):
+        return self.getProperty("Path") + self.getDirectorySeparator() + self.getProperty("Name")
 
     def doInstall(self):
         # Download and extract
@@ -14,9 +14,12 @@ class JarResource(ArchiveResource):
         
         # Rename the file from the current one to what it should be
         current = "." + self.getDirectorySeparator() + "jar"
-        new = self.getProperty("Path") + self.getDirectorySeparator() + self.getProperty("Name")
+        new = self.getNewFileName()
         
         # Check the directory is installed
         self.makeDirectory(self.getProperty("Path"))
         
         return self.rename(current, new)
+    
+    def doUninstall(self):
+        return self.delete(self.getNewFileName())

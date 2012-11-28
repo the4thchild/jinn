@@ -6,9 +6,11 @@ Action object which represents a basic action wrapper
 """
 class ActionWrapper(ActivityWrapper):
 
-    # Whether action is on by default
-    default = False
-    
+    def __init__(self, id, manifest, data, os, arch):
+        self.default = False
+        
+        super(ActionWrapper, self).__init__(id, manifest, data, os, arch)
+
     """
     Load our data from the object into the class
     """

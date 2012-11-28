@@ -11,22 +11,19 @@ import json
 
 class Manifest(FileSystemHelper):
     
-    # Versioning information
-    jinn = None
-    
-    # Description of this jinn
-    description = ""
-    
-    # Resources in the jinn
-    resources = []
-    
-    # Actions in the jinn
-    actions = []
+    def __init__(self, location, is_url = True, isInstalled = False):
+        self.jinn = None
+        self.description = ""
+        self.resources = []
+        self.actions = []
+        
+        self.load(location, is_url, isInstalled)
     
     """
     Loads data for this manifest from a specific location, then calls to parse it
     """
-    def load(self, location, is_url):
+    def load(self, location, is_url, isInstalled):
+        # TODO: Fix this
         if is_url:
             l = UrlLoader(location)
             data = l.read(True)
@@ -36,15 +33,15 @@ class Manifest(FileSystemHelper):
         if data is None:
             raise ManifestException("Unable to load data from the specified source")
         self.data = data;
-        self.parseData()
+        self.parseData(isInstalled)
         
     """
     Parses a generic data structure for this manifest
     """
-    def parseData(self):
+    def parseData(self, isInstalled):
         self.readVersionData()
         self.readDescription()
-        self.loadResources()
+        self.loadResources(isInstalled)
         self.loadActions()
         
     """
@@ -67,13 +64,14 @@ class Manifest(FileSystemHelper):
     """
     Load resources from the data
     """
-    def loadResources(self):
+    def loadResources(self, isInstalled):
         try:
             i = 0
             dataResources = self.data["Resources"]
             for k in dataResources.keys():
                 res = ResourceWrapper(k, self, dataResources[k], OperatingSystem.LIN, Architecture.x64)
                 if res.checkConditions():
+                    res.setInstalled(isInstalled)
                     self.resources.append(res)
                 i += 1
             if i < 1:
@@ -129,6 +127,15 @@ class Manifest(FileSystemHelper):
         return True
     
     """
+    Uninstall all of the resources
+    """
+    def uninstallResources(self):
+        for res in self.resources:
+            if not res.doUninstall():
+                return False
+        return True
+    
+    """
     Helper which returns a resource which has a specific type
     Returns the inner type, not the wrapper!
     """
@@ -147,26 +154,3 @@ class Manifest(FileSystemHelper):
             if res.getId() == i:
                 return res
         return None
-    
-    """
-    Manifest initialisation
-    """
-    def __init__(self, location, is_url = True):
-        self.load(location, is_url)
-
-"""
-Main function that is run when the code is started from this file
-Running from this file picks up the first argument as the file to load,
-downloads and parses it, and then reports on whether it was successfully loaded.
-"""
-def main():
-    if len(sys.argv) < 2:
-        print "You must provide an argument which is the relative name of a file to load"
-        return 1
-    print Manifest(sys.argv[1], False)
-    print "Loaded from %s successfully" % sys.argv[1]
-    return 0
-
-if __name__ == '__main__':
-    status = main()
-    sys.exit(status)

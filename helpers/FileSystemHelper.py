@@ -113,7 +113,17 @@ class FileSystemHelper(object):
     Remove a specific content string from the specified file
     """
     def removeFromFile(self, fname, content):
-        pass
+        try:
+            fin = open(fname)
+            fout = open(fname + ".tmp", "w+")
+            for line in fin:
+                fout.write(line.replace(content, ""))
+            fin.close()
+            fout.close()
+            self.rename(fname + ".tmp", fname)
+            return True
+        except:
+            return False
         
     """
     Helper to get the file name given a path to a file

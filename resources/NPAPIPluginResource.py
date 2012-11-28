@@ -8,6 +8,14 @@ class NPAPIPluginResource(FileResource):
     def getType(self):
         return "Jinn::Resource::NPAPIPlugin"
     
+    def getLinuxTargets(self):
+        targetdir = self.getHomeDirectory() + self.sep() + ".mozilla" + self.sep() + "plugins"
+        target = targetdir + self.sep() + self.getFileNameFromPath(self.getFilename(self.getProperty("Source"), self.getProperty("Path"), self.getProperty("Name", False)))
+        return (targetdir, target)
+    
+    def getLinuxTargetConfigFile(self):
+        return g.jinn.getInstallTargetDirectory() + self.sep() + self.filename
+
     def doInstall(self):
         global jinn
         
@@ -15,12 +23,18 @@ class NPAPIPluginResource(FileResource):
         super(NPAPIPluginResource, self).doInstall()
         
         if self.os is OperatingSystem.LIN:
-            targetdir = self.getHomeDirectory() + self.sep() + ".mozilla" + self.sep() + "plugins"
+            targetdir,target = self.getLinuxTargets()
             self.makeDirectory(targetdir)
-            target = targetdir + self.sep() + self.getFileNameFromPath(self.filename)
-            f = g.jinn.getInstallTargetDirectory() + self.sep() + self.filename
+            f = self.getLinuxTargetConfigFile()
             try:
                 os.symlink(f, target)
                 return True
             except:
                 return False
+            
+    def doUninstall(self):
+        if self.os is OperatingSystem.LIN:
+            targetdir,target = self.getLinuxTargets()
+            if not self.delete(target):
+                return False
+            return True

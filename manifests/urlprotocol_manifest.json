@@ -1,0 +1,47 @@
+{
+	"Jinn": {
+		"AppName": "URLProtocol",
+        "Version" : "1",
+        "Source"  : "",
+        "Updater" : ""
+    },
+	"Description": "URL Protocol",
+	"Resources": {
+	
+		"Protocol": {
+			"Type": "Jinn::Resource::UrlProtocolHandler",
+			"Name": "Base protocol",
+			"Description": "Our protocol",
+			"Properties": {
+				"Terminal": false,
+				"Protocol": "testprotocol",
+				"Action": { "Ref": "RunCmd" }
+			},
+			"Version": "1.0.0"
+		}
+	},
+	"Actions": {
+		"RunCmd": {
+    		"Type": "Jinn::Action::RunShell",
+    		"Name": "cmd",
+    		"Version": 1,
+    		"Properties": {
+    			"Command": {
+    				"Platform": {
+    					"WIN": {
+    						"x32": "dir",
+    						"x64": "dir"
+    					},
+    					"OSX": {
+    						"x64": "ls"
+    					},
+    					"LIN": {
+    						"x32": "ls",
+    						"x64": "echo \"testing 123\" > test"
+    					}
+    				}
+    			}
+    		}
+    	}
+	}
+}

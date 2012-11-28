@@ -10,32 +10,22 @@ General code which applies to all activity wrappers
 """
 class ActivityWrapper(object):
     
-    # The manifest this activity is in
-    manifest = None
-    
-    # The id of this activity from the config
-    id = None
-    
-    # The data for the activity (from config file)
-    data = None
-    
-    # The type of this activity
-    type = None
-    
-    # The name of this activity
-    name = None
-    
-    # Description of the activity
-    description = ""
-    
-    # Conditions of the activity
-    conditions = None
-    
-    # The OS in use
-    os = None
-    
-    # The architecture in use
-    arch = None
+    """
+    Constructor which gets the data, OS and architecture
+    """
+    def __init__(self, id, manifest, data, os, arch):
+        self.type = None
+        self.name = None
+        self.description = ""
+        self.conditions = None
+        
+        self.id = id
+        self.manifest = manifest
+        self.data = data
+        self.os = os
+        self.arch = arch
+        
+        self.load()
     
     """
     Helper function which loads all the classes in this module,
@@ -90,7 +80,7 @@ class ActivityWrapper(object):
                     platform = [platform]
                 os = OperatingSystem().getOperatingSystem(self.os)
                 if os not in platform:
-                    g.feedback.log(LogLevels.DEBUG, "Unable to find OS %s in Platforms %s, so not installing activity %s" % (os, platform, self.name))
+                    g.feedback.log(LogLevels.DEBUG, "Unable to find OS %s in Platforms %s, so not working with activity %s" % (os, platform, self.name))
                     return False
             if "Architecture" in conditions:
                 architecture = conditions["Architecture"]
@@ -98,7 +88,7 @@ class ActivityWrapper(object):
                     architecture = [architecture]
                 arch = Architecture().getArchitecture(self.arch)
                 if arch not in architecture:
-                    g.feedback.log(LogLevels.DEBUG, "Unable to find architecture %s in Architectures %s, so not installing activity %s" % (arch, architecture, self.name))
+                    g.feedback.log(LogLevels.DEBUG, "Unable to find architecture %s in Architectures %s, so not working with activity %s" % (arch, architecture, self.name))
                     return False
         
         # Check the conditions are available in all properties which are platform specific too
@@ -121,7 +111,7 @@ class ActivityWrapper(object):
                     if "Default" in plat:
                         # If we have a default we are good to continue
                         continue
-                    g.feedback.log(LogLevels.DEBUG, "OS/architecture combo %s / %s is not available in activity %s, property %s, so not installing this activity" % (OperatingSystem().getOperatingSystem(self.os), Architecture().getArchitecture(self.arch), self.name, name))
+                    g.feedback.log(LogLevels.DEBUG, "OS/architecture combo %s / %s is not available in activity %s, property %s, so not processing this activity" % (OperatingSystem().getOperatingSystem(self.os), Architecture().getArchitecture(self.arch), self.name, name))
                     return False
         
         return True
@@ -131,14 +121,3 @@ class ActivityWrapper(object):
     """
     def getId(self):
         return self.id
-    
-    """
-    Constructor which gets the data, OS and architecture
-    """
-    def __init__(self, id, manifest, data, os, arch):
-        self.id = id
-        self.manifest = manifest
-        self.data = data
-        self.os = os
-        self.arch = arch
-        self.load()

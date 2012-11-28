@@ -3,14 +3,10 @@
 Base class for loaders
 """
 class LoaderBase(object):
-    
-    # The location to load from
-    location = None
-    
-    # The cache of loaded content
-    cache = None
-    
+
     def __init__(self, location):
+        self.cache = None
+        
         self.location = location
     
     """

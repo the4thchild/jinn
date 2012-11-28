@@ -56,3 +56,13 @@ MimeType=x-scheme-handler/%s
             a = self.saveToFile(self.getLinuxFileDirectory() + self.sep() + self.getLinuxFileName(protocol), self.getLinuxFileContents(terminal, executable, name, description, protocol))
             b = self.appendToFile(self.getLinuxConfigFile(), self.getLinuxConfigString(protocol))
             return a and b
+        
+    def doUninstall(self):
+        protocol = self.getProperty("Protocol")
+        
+        if self.os is OperatingSystem.LIN:
+            if not self.delete(self.getLinuxFileDirectory() + self.sep() + self.getLinuxFileName(protocol)):
+                return False
+            if not self.removeFromFile(self.getLinuxConfigFile(), self.getLinuxConfigString(protocol)):
+                return False
+            return True
