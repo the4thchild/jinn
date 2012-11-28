@@ -10,7 +10,7 @@ class NPAPIPluginResource(FileResource):
     
     def getLinuxTargets(self):
         targetdir = self.getHomeDirectory() + self.sep() + ".mozilla" + self.sep() + "plugins"
-        target = targetdir + self.sep() + self.getFileNameFromPath(self.filename)
+        target = targetdir + self.sep() + self.getFileNameFromPath(self.getFilename(self.getProperty("Source"), self.getProperty("Path"), self.getProperty("Name", False)))
         return (targetdir, target)
     
     def getLinuxTargetConfigFile(self):

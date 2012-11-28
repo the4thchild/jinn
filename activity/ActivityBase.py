@@ -75,20 +75,26 @@ class ActivityBase(CompressionHelper):
     def getFilenameFromUrl(self, url):
         u,name = url.rsplit("/", 1)
         return name
-        
+
     """
-    Helper function which does a download from a URL to a file
-    If no path specified, goes to the project root
-    If no name specified, falls back to a name from the URL. If that is not available, uses an MD5 of the URL
+    Returns the filename to use
     """
-    def doDownload(self, url, path, name):
+    def getFilename(self, url, path, name):
         if path is None:
             path = "."
         if name is None:
             name = self.getFilenameFromUrl(url)
             if len(name) < 1:
                 name = hashlib.md5(url).hexdigest()
-        fullPath = path + self.getDirectorySeparator() + name
+        return path + self.getDirectorySeparator() + name
+
+    """
+    Helper function which does a download from a URL to a file
+    If no path specified, goes to the project root
+    If no name specified, falls back to a name from the URL. If that is not available, uses an MD5 of the URL
+    """
+    def doDownload(self, url, path, name):
+        fullPath = self.getFilename(url, path, name)
         if self.exists(fullPath):
             self.delete(fullPath)
         downloader = UrlDownloader(url)
