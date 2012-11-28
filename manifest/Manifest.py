@@ -135,23 +135,60 @@ class Manifest(FileSystemHelper):
         return True
     
     """
+    Set the install status of resources if they are
+    already installed at the right version
+    """
+    def setInstallStatus(self, old_resources):
+        for old_res in old_resources:
+            new_res = self.getResourceForId(old_res.id)
+            if new_res is not None:
+                if new_res.version == old_res.version:
+                    new_res.setInstalled(old_res.isInstalled)
+        return True
+    
+    """
     Installs resources that are new in me from the old_resources
     """
     def installNewResources(self, old_resources):
-        pass
+        for res in self.resources:
+            old_resource = self.getResourceForId(res.id, old_resources)
+            if old_resource is None:
+                # Resource is in current but not in old, so install
+                if not res.doInstall():
+                    return False
+        return True
     
     """
     Uninstalls resources that were in old_resources but are not in me
     """
     def uninstallRemovedResources(self, old_resources):
-        pass
+        for res in old_resources:
+            new_resource = self.getResourceForId(res.id)
+            if new_resource is None:
+                # Resource is in old but not current, so uninstall
+                if not res.doUninstall():
+                    return False
+        return True
     
     """
     For the resources that are in both me and old_resources, if the
     version has changed, update that resource
     """
     def updateResources(self, old_resources):
-        pass
+        for old_res in old_resources:
+            new_res = self.getResourceForId(old_res.id)
+            if new_res is not None:
+                if new_res.version != old_res.version:
+                    # Resource is in both old and new, so uninstall old one
+                    if not old_res.doUninstall():
+                        return False
+                    # Install new one
+                    if not new_res.doInstall():
+                        return False
+                    # Install the dependents that were removed during the uninstall
+                    if not new_res.installDependents():
+                        return False
+        return True
     
     """
     Uninstall all of the resources
@@ -176,8 +213,10 @@ class Manifest(FileSystemHelper):
     Returns a resource given its ID
     Returns the wrapper
     """
-    def getResourceForId(self, i):
-        for res in self.resources:
+    def getResourceForId(self, i, resources = None):
+        if resources is None:
+            resources = self.resources
+        for res in resources:
             if res.getId() == i:
                 return res
         return None

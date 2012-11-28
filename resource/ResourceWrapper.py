@@ -98,14 +98,19 @@ class ResourceWrapper(ActivityWrapper):
         
         g.feedback.log(LogLevels.DEBUG, "Resolving dependencies of %s" % self.id)
         
-        # Check dependencies and uninstall that first
+        # Check dependencies and uninstall those first
         for res in self.manifest.resources:
             if res.depends is not None:
                 deps = res.depends
                 if not type(deps) is list:
                     deps = [deps]
                 for dep in deps:
-                    if dep == self.id and res.isInstalled:
+                    try:
+                        ref = dep["Ref"]
+                    except:
+                        g.feedback.log(LogLevels.ERROR, "Unable to uninstall %s, dependency must contain a Ref object" % self.id)
+                        return False
+                    if ref == self.id and res.isInstalled:
                         # Uninstall if it depends on us
                         uninst = res.doUninstall()
                         if not uninst:
@@ -123,3 +128,31 @@ class ResourceWrapper(ActivityWrapper):
             
         self.isInstalling = False
         return res
+    
+    """
+    Install all of the dependents, for example after an update
+    Update process will first uninstall all of the dependents then the main resource
+    Once the main resource has been reinstalled, the dependents can be reinstalled - 
+    that is the process that occurs here
+    Note this is a force-install, it ignores the installed flag
+    """
+    def installDependents(self):
+        for res in self.manifest.resources:
+            if res.depends is not None:
+                deps = res.depends
+                if not type(deps) is list:
+                    deps = [deps]
+                for dep in deps:
+                    try:
+                        ref = dep["Ref"]
+                    except:
+                        g.feedback.log(LogLevels.ERROR, "Unable to install %s, dependency must contain a Ref object" % self.id)
+                        return False
+                    if ref == self.id:
+                        # Install if it is a dependent. Forcefully.
+                        res.isInstalled = False
+                        inst = res.doInstall()
+                        if not inst:
+                            g.feedback.log(LogLevels.ERROR, "Unable to install %s, dependency %s failed to install" % (self.id, res.name))
+                            return False
+        return True

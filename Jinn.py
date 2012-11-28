@@ -117,17 +117,26 @@ A Java installer"""
             g.feedback.log(LogLevels.DEBUG, "New and current manifest versions are %s and %s, so skipping update as they are identical" % (self.manifest.jinn.version, self.new_manifest.jinn.version))
             return True
         
+        # Initially, set the resources that are installed on the new manifest already
+        if not self.new_manifest.setInstallStatus(self.manifest.resources):
+            return False
+        
         # First, install resources that are new
-        self.new_manifest.installNewResources(self.manifest.resources)
+        if not self.new_manifest.installNewResources(self.manifest.resources):
+            return False
         
         # Second, uninstall resources that are gone
-        self.new_manifest.uninstallRemovedResources(self.manifest.resources)
+        if not self.new_manifest.uninstallRemovedResources(self.manifest.resources):
+            return False
         
         # Third, update resources that are new version
-        self.new_manifest.updateResources(self.manifest.resources)
+        if not self.new_manifest.updateResources(self.manifest.resources):
+            return False
         
         # Finally, transition the manifest over to the new one
         self.manifest = self.new_manifest
+        if not self.manifest.save():
+            return False
         
         # Done!
         return True
