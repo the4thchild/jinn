@@ -1,0 +1,23 @@
+{
+	"Jinn": {
+		"AppName": "UpdateArchiveUpdateExample",
+        "Version" : 1
+    },
+	"Description": "Update test, updating an archive",
+	"Resources": {
+	
+		"ExampleArchive": {
+			"Type": "Jinn::Resource::Archive",
+			"Name": "Archive",
+			"Description": "The archive",
+			"Properties": {
+				"Source": "http://pkgs.fedoraproject.org/repo/pkgs/ldd-pdf/examples.tar.gz/330d478a64fea5f772645c3728a4e2df/examples.tar.gz",
+				"Path": "Sample/Archive"
+			},
+			"Version": 1
+		}
+		
+	},
+	"Actions": {
+	}
+}

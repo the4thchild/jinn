@@ -1,0 +1,23 @@
+{
+	"Jinn": {
+		"AppName": "UpdateArchiveRemoveExample",
+        "Version" : 2
+    },
+	"Description": "Update test, removing an archive",
+	"Resources": {
+	
+		"ExampleFile": {
+			"Type": "Jinn::Resource::File",
+			"Name": "Test File",
+			"Description": "A basic sample file",
+			"Properties": {
+				"Source": "http://www.google.com/humans.txt",
+				"Path": "Sample"
+			},
+			"Version": 1
+		}
+		
+	},
+	"Actions": {
+	}
+}

@@ -1,0 +1,23 @@
+{
+	"Jinn": {
+		"AppName": "UpdateArchiveAddExample",
+        "Version" : 1
+    },
+	"Description": "Update test, adding an archive",
+	"Resources": {
+	
+		"ExampleFile": {
+			"Type": "Jinn::Resource::File",
+			"Name": "Test File",
+			"Description": "A basic sample file",
+			"Properties": {
+				"Source": "http://www.google.com/humans.txt",
+				"Path": "Sample"
+			},
+			"Version": 1
+		}
+		
+	},
+	"Actions": {
+	}
+}
