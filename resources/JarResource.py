@@ -13,7 +13,7 @@ class JarResource(ArchiveResource):
         super(JarResource, self).doInstall(".", "jar")
         
         # Rename the file from the current one to what it should be
-        current = "." + self.getDirectorySeparator() + "jar"
+        current = "." + self.getDirectorySeparator() + "jartmp"
         new = self.getNewFileName()
         
         # Check the directory is installed
