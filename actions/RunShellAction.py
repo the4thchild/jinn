@@ -8,8 +8,8 @@ class RunShellAction(ActionBase):
     def getType(self):
         return "Jinn::Action::RunShell"
     
-    def run(self):
-        cmd = self.getProperty("Command")
+    def run(self, args):
+        cmd = self.getProperty("Command") + " " + args
         res = os.system(cmd)
         g.feedback.log(LogLevels.DEBUG, "Running command %s resulted in code %s" % (cmd, str(res)))
         return res is 0

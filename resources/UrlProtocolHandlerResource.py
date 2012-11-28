@@ -48,7 +48,7 @@ MimeType=x-scheme-handler/%s
         description = g.jinn.manifest.description
         executable = g.jinn.getInstallTargetFile()
         if g.jinn.isDevMode():
-            executable = "python " + self.getCurrentDirectory() + self.sep() + self.getCurrentFile()
+            executable = "python " + self.getCurrentFile()
         if action is not None:
             executable = executable + " -action " + action["Ref"]
         

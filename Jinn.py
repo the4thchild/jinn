@@ -2,6 +2,7 @@ import sys
 import options
 import g
 import os
+import copy
 # Redundant import just for pyinstaller
 import encodings
 
@@ -35,6 +36,7 @@ A Java installer"""
     def __init__(self):
         self.new_manifest = None
         self.manifest = None
+        self.args = ""
         
         # Setup feedback mechanism
         global feedback
@@ -83,7 +85,7 @@ A Java installer"""
         
         g.feedback.log(LogLevels.DEBUG, "Default action")
         try:
-            self.manifest.runDefaultAction()
+            self.manifest.runDefaultAction(self.args)
             return 0
         except:
             return 1
@@ -96,7 +98,7 @@ A Java installer"""
             
         g.feedback.log(LogLevels.DEBUG, "Run action %s" % action)
         try:
-            self.manifest.runAction(action)
+            self.manifest.runAction(action, self.args)
             return 0
         except:
             return 1
@@ -275,6 +277,20 @@ A Java installer"""
         return targetdir is currentdir
     
     """
+    Take the sys args and turn them into a string stored on the object
+    for later use. Offset is how many to skip off the front.
+    Automatically skips the first one, the current script
+    """
+    def processArgs(self, offset = 0):
+        args = copy.copy(sys.argv)
+        args.pop(0)
+        i = 0
+        while i < offset:
+            args.pop(0)
+            i += 1
+        self.args = " ".join(map(str, args))
+    
+    """
     Check whether or not this jinn is currently installed
     """
     def isInstalled(self):
@@ -337,7 +353,12 @@ Options:
             if len(sys.argv) < 3:
                 g.feedback.userMessage("For -action, you must specify an action - try -help")
                 return 1
+            self.processArgs(2)
             return self.runAction(sys.argv[2])
+        else:
+            # There are some args, we don't recognise the first, so must want to run default action with some args
+            self.processArgs()
+            return self.runDefaultAction()
 
 
 """

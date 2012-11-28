@@ -11,7 +11,7 @@ class ActionBase(ActivityBase):
     """
     Command the action to run
     """
-    def doRun(self):
+    def doRun(self, args):
         g.feedback.log(LogLevels.ERROR, "Action does not implement doRun")
         return 1
     

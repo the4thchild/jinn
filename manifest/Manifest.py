@@ -96,19 +96,19 @@ class Manifest(FileSystemHelper):
     Run the default action
     Returns false if no default action
     """
-    def runDefaultAction(self):
+    def runDefaultAction(self, args):
         for action in self.actions:
             if action.default:
-                return action.run()
+                return action.run(args)
         return False
     
     """
     Run the specified action
     """
-    def runAction(self, actionName):
+    def runAction(self, actionName, args):
         for action in self.actions:
             if action.id == actionName:
-                return action.run()
+                return action.run(args)
         return False
 
     """

@@ -26,5 +26,5 @@ class ActionWrapper(ActivityWrapper):
     """
     Run this action
     """
-    def run(self):
-        return self.type.run()
+    def run(self, args):
+        return self.type.run(args)
