@@ -110,12 +110,20 @@ class Manifest(FileSystemHelper):
             if action.id == actionName:
                 return action.run()
         return False
-    
+
+    """
+    Returns the name of the manifest file
+    """
+    def getManifestFile(self):
+        return ".jinn" + self.getDirectorySeparator() + "current_manifest.json"
+
     """
     Save the raw manifest data to the manifest fil
     """
     def save(self):
-        return self.saveToFile(".jinn" + self.getDirectorySeparator() + "current_manifest.json", json.dumps(self.data))
+        if not self.delete(self.getManifestFile()):
+            return False
+        return self.saveToFile(self.getManifestFile(), json.dumps(self.data))
     
     """
     Installs all of the resources
@@ -125,6 +133,25 @@ class Manifest(FileSystemHelper):
             if not res.doInstall():
                 return False
         return True
+    
+    """
+    Installs resources that are new in me from the old_resources
+    """
+    def installNewResources(self, old_resources):
+        pass
+    
+    """
+    Uninstalls resources that were in old_resources but are not in me
+    """
+    def uninstallRemovedResources(self, old_resources):
+        pass
+    
+    """
+    For the resources that are in both me and old_resources, if the
+    version has changed, update that resource
+    """
+    def updateResources(self, old_resources):
+        pass
     
     """
     Uninstall all of the resources
