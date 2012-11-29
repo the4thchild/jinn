@@ -11,11 +11,13 @@ import json
 
 class Manifest(FileSystemHelper):
     
-    def __init__(self, location, is_url = True, isInstalled = False):
+    def __init__(self, os, arch, location, is_url = True, isInstalled = False):
         self.jinn = None
         self.description = ""
         self.resources = []
         self.actions = []
+        self.os = os
+        self.arch = arch
         
         self.load(location, is_url, isInstalled)
     
@@ -69,7 +71,7 @@ class Manifest(FileSystemHelper):
             i = 0
             dataResources = self.data["Resources"]
             for k in dataResources.keys():
-                res = ResourceWrapper(k, self, dataResources[k], OperatingSystem.LIN, Architecture.x64)
+                res = ResourceWrapper(k, self, dataResources[k], self.os, self.arch)
                 if res.checkConditions():
                     res.setInstalled(isInstalled)
                     self.resources.append(res)
@@ -86,7 +88,7 @@ class Manifest(FileSystemHelper):
         try:
             dataActions = self.data["Actions"]
             for k in dataActions.keys():
-                action = ActionWrapper(k, self, dataActions[k], OperatingSystem.LIN, Architecture.x64)
+                action = ActionWrapper(k, self, dataActions[k], self.os, self.arch)
                 if action.checkConditions():
                     self.actions.append(action)
         except KeyError:

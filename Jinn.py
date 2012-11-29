@@ -3,6 +3,7 @@ import options
 import g
 import os
 import copy
+import platform
 # Redundant import just for pyinstaller
 import encodings
 
@@ -13,6 +14,7 @@ from feedback.UIFeedback import UIFeedback
 from feedback.FeedbackBase import FeedbackBase
 from feedback.LogLevels import LogLevels
 from helpers.FileSystemHelper import FileSystemHelper
+from env.enums import OperatingSystem, Architecture
 
 class Jinn(FileSystemHelper):
     
@@ -37,6 +39,8 @@ A Java installer"""
         self.new_manifest = None
         self.manifest = None
         self.args = ""
+        self.os = self.getOperatingSystem()
+        self.arch = self.getArchitecture()
         
         # Setup feedback mechanism
         global feedback
@@ -48,15 +52,44 @@ A Java installer"""
             # Not specified, need something to stop errors, so us this
             g.feedback = FeedbackBase()
     
+    """
+    Gets the current OS
+    """
+    def getOperatingSystem(self):
+        p = platform.system()
+        if p == "Windows":
+            return OperatingSystem.WIN
+        elif p == "Darwin":
+            return OperatingSystem.OSX
+        elif p == "Linux":
+            return OperatingSystem.LIN
+        else:
+            raise OperatingSystemNotFoundException(p)
+    
+    """
+    Gets the current architecture
+    """
+    def getArchitecture(self):
+        a = platform.architecture()[0]
+        if a == "64bit":
+            return Architecture.x64
+        elif a == "32bit":
+            return Architecture.x32
+        else:
+            raise ArchitectureNotFoundException(a)
+    
+    """
+    Loads the manifest file
+    """
     def loadManifest(self):
                 
         g.feedback.log(LogLevels.DEBUG, "Loading new manifest from %s" % options.manifest)
-        self.new_manifest = Manifest(options.manifest, options.manifest_is_url)
+        self.new_manifest = Manifest(self.os, self.arch, options.manifest, options.manifest_is_url)
         
         if self.isInstalled():
             manifest_file = ".jinn" + self.sep() + "current_manifest.json"
             g.feedback.log(LogLevels.DEBUG, "Loading manifest from %s" % manifest_file)
-            self.manifest = Manifest(manifest_file, False, True)
+            self.manifest = Manifest(self.os, self.arch, manifest_file, False, True)
         else:
             g.feedback.log(LogLevels.DEBUG, "Loading manifest from new manifest, as not installed")
             self.manifest = self.new_manifest
@@ -365,6 +398,20 @@ Options:
             self.processArgs()
             return self.runDefaultAction()
 
+
+class OperatingSystemNotFoundException(Exception):
+    def __init__(self, value):
+        self.value = value
+    
+    def __str__(self):
+        return repr(self.value)
+    
+class ArchitectureNotFoundException(Exception):
+    def __init__(self, value):
+        self.value = value
+    
+    def __str__(self):
+        return repr(self.value)
 
 """
 Main function that is run when the code is started from this file
