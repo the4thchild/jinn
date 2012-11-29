@@ -4,6 +4,7 @@ from feedback.LogLevels import LogLevels
 from zipfile import ZipFile
 import tarfile
 from FileSystemHelper import FileSystemHelper
+from env.enums import OperatingSystem
 
 """
 Compression helper for helping to do compression stuff quickly 
@@ -73,6 +74,10 @@ class CompressionHelper(FileSystemHelper):
             
             # Check the unpack exists
             unpacker = res.type.getPath() + self.getDirectorySeparator() + "bin" + self.getDirectorySeparator() + "unpack200"
+            
+            if g.jinn.os is OperatingSystem.WIN:
+                unpacker = unpacker + ".exe"
+            
             if not self.exists(unpacker):
                 g.feedback.log(LogLevels.ERROR, "Pack200 not available, JRE found but unable to find unpack200 in the bin path: %s" % unpacker)
                 return False
