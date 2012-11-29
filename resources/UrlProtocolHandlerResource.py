@@ -65,8 +65,10 @@ MimeType=x-scheme-handler/%s
         elif self.os is OperatingSystem.WIN:
             try:
                 from _winreg import *
-                importkey = CreateKey(HKEY_CLASSES_ROOT, protocol)
-                SetValue(HKEY_CLASSES_ROOT, protocol, REG_SZ, "URL:%s Handler" % protocol)
+                softwarekey = OpenKey(HKEY_CURRENT_USER, "Software")
+                classkey = OpenKey(softwarekey, "Classes")
+                importkey = CreateKey(classkey, protocol)
+                SetValue(classkey, protocol, REG_SZ, "URL:%s Handler" % protocol)
                 SetValueEx(importkey, "URL Protocol", REG_SZ, 0, "")
                 iconkey = CreateKey(importkey, "DefaultIcon")
                 SetValue(importkey, "DefaultIcon", REG_SZ, "%s,1" % just_executable)
@@ -79,6 +81,8 @@ MimeType=x-scheme-handler/%s
                 CloseKey(shellkey)
                 CloseKey(iconkey)
                 CloseKey(importkey)
+                CloseKey(classkey)
+                CloseKey(softwarekey)
                 return True
             except Exception as e:
                 g.feedback.log(LogLevels.ERROR, "Exception playing with the registry, %s" % e)
@@ -96,7 +100,9 @@ MimeType=x-scheme-handler/%s
         elif self.os is OperatingSystem.WIN:
             try:
                 from _winreg import *
-                importkey = OpenKey(HKEY_CLASSES_ROOT, "importio")
+                softwarekey = OpenKey(HKEY_CURRENT_USER, "Software")
+                classkey = OpenKey(softwarekey, "Classes")
+                importkey = OpenKey(classkey, "importio")
                 shellkey = OpenKey(importkey, "shell")
                 openkey = OpenKey(shellkey, "open")
                 DeleteKey(openkey, "command")
@@ -107,6 +113,8 @@ MimeType=x-scheme-handler/%s
                 DeleteKey(importkey, "DefaultIcon")
                 CloseKey(importkey)
                 DeleteKey(HKEY_CLASSES_ROOT, "importio")
+                CloseKey(classkey)
+                CloseKey(softwarekey)
                 return True
             except Exception as e:
                 g.feedback.log(LogLevels.ERROR, "Exception playing with the registry, %s" % e)
