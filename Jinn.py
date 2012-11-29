@@ -73,14 +73,10 @@ A Java installer"""
     Gets the current architecture
     """
     def getArchitecture(self):
-        a = platform.architecture()[0]
-        if a == "64bit":
+        if(sys.maxsize > 2**32):
             return Architecture.x64
-        elif a == "32bit":
-            return Architecture.x32
         else:
-            g.feedback.log(LogLevels.ERROR, "Unable to work with architecture %s" % a)
-            raise ArchitectureNotFoundException(a)
+            return Architecture.x32
     
     """
     Loads the manifest file
@@ -435,7 +431,7 @@ Options:
             if self.isInstalled():
                 return self.runDefaultAction()
             else:
-                self.doInstall()
+                return self.doInstall()
         elif sys.argv[1] == "-install":
             return self.doInstall()
         elif sys.argv[1] == "-uninstall":
@@ -457,13 +453,6 @@ Options:
 
 
 class OperatingSystemNotFoundException(Exception):
-    def __init__(self, value):
-        self.value = value
-    
-    def __str__(self):
-        return repr(self.value)
-    
-class ArchitectureNotFoundException(Exception):
     def __init__(self, value):
         self.value = value
     
