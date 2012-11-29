@@ -37,6 +37,7 @@ class NPAPIPluginResource(FileResource):
                 return False
         elif self.os is OperatingSystem.WIN:
             cmd = "regsvr32 /s " + self.getProperty("Path") + self.sep() + self.getMyFileName()
+            g.feedback.log(LogLevels.DEBUG, "Registering with command %s" % cmd)
             res = os.system(cmd)
             if res < 1:
                 return True
@@ -53,6 +54,7 @@ class NPAPIPluginResource(FileResource):
         elif self.os is OperatingSystem.WIN:
             target = self.getProperty("Path") + self.sep() + self.getMyFileName()
             cmd = "regsvr32 /s -u " + target
+            g.feedback.log(LogLevels.DEBUG, "Unregistering with command %s" % cmd)
             res = os.system(cmd)
             if res > 0:
                 g.feedback.log(LogLevels.ERROR, "Calling regsvr failed, command was %s, result was %s" % (cmd, str(res)))
