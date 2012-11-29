@@ -143,11 +143,13 @@ class FileSystemHelper(object):
     Deletes a file or directory at the specified location
     """
     def delete(self, path):
-        # TODO: Does this work with Symlinks? To folders / files?
         try:
             if os.path.isdir(path):
                 # Delete if a directory
                 shutil.rmtree(path)
+            elif os.path.islink(path):
+                # Unlink if a symlink
+                os.unlink(path)
             elif os.path.exists(path):
                 # Delete if a file
                 os.remove(path)
