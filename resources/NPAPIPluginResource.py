@@ -2,15 +2,20 @@ from FileResource import FileResource
 from env.enums import OperatingSystem
 import os
 import g
+from feedback.LogLevels import LogLevels
 
 class NPAPIPluginResource(FileResource):
     
     def getType(self):
         return "Jinn::Resource::NPAPIPlugin"
     
+
+    def getMyFileName(self):
+        return self.getFileNameFromPath(self.getFilename(self.getProperty("Source"), self.getProperty("Path"), self.getProperty("Name", False)))
+
     def getLinuxTargets(self):
         targetdir = self.getHomeDirectory() + self.sep() + ".mozilla" + self.sep() + "plugins"
-        target = targetdir + self.sep() + self.getFileNameFromPath(self.getFilename(self.getProperty("Source"), self.getProperty("Path"), self.getProperty("Name", False)))
+        target = targetdir + self.sep() + self.getMyFileName()
         return (targetdir, target)
     
     def getLinuxTargetConfigFile(self):
@@ -31,9 +36,13 @@ class NPAPIPluginResource(FileResource):
             except:
                 return False
         elif self.os is OperatingSystem.WIN:
-            #res = os.system("regsvr32 " + self.getProperty("Path") + self.sep() + self.)
-            # Fudge for now
-            return True
+            cmd = "regsvr32 " + self.getProperty("Path") + self.sep() + self.getMyFileName()
+            res = os.system(cmd)
+            if res < 1:
+                return True
+            else:
+                g.feedback.log(LogLevels.ERROR, "Calling regsvr failed, command was %s, result was %s" % (cmd, str(res)))
+                return False
             
     def doUninstall(self):
         if self.os is OperatingSystem.LIN:
@@ -41,3 +50,11 @@ class NPAPIPluginResource(FileResource):
             if not self.delete(target):
                 return False
             return True
+        elif self.os is OperatingSystem.WIN:
+            cmd = "regsvr32 -u " + self.getProperty("Path") + self.sep() + self.getMyFileName()
+            res = os.system(cmd)
+            if res < 1:
+                return True
+            else:
+                g.feedback.log(LogLevels.ERROR, "Calling regsvr failed, command was %s, result was %s" % (cmd, str(res)))
+                return False
