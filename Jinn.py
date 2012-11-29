@@ -39,8 +39,6 @@ A Java installer"""
         self.new_manifest = None
         self.manifest = None
         self.args = ""
-        self.os = self.getOperatingSystem()
-        self.arch = self.getArchitecture()
         
         # Setup feedback mechanism
         global feedback
@@ -51,6 +49,9 @@ A Java installer"""
         else:
             # Not specified, need something to stop errors, so us this
             g.feedback = FeedbackBase()
+            
+        self.os = self.getOperatingSystem()
+        self.arch = self.getArchitecture()
             
         g.feedback.log(LogLevels.DEBUG, "Started up. OS: %s; Architecture: %s" % (OperatingSystem().getOperatingSystem(self.os), Architecture().getArchitecture(self.arch)))
     
