@@ -51,10 +51,12 @@ class NPAPIPluginResource(FileResource):
                 return False
             return True
         elif self.os is OperatingSystem.WIN:
-            cmd = "regsvr32 /s -u " + self.getProperty("Path") + self.sep() + self.getMyFileName()
+            target = self.getProperty("Path") + self.sep() + self.getMyFileName()
+            cmd = "regsvr32 /s -u " + target
             res = os.system(cmd)
-            if res < 1:
-                return True
-            else:
+            if res > 0:
                 g.feedback.log(LogLevels.ERROR, "Calling regsvr failed, command was %s, result was %s" % (cmd, str(res)))
                 return False
+            if not self.delete(target):
+                return False
+            return True
