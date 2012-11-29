@@ -73,7 +73,30 @@ A Java installer"""
     Gets the current architecture
     """
     def getArchitecture(self):
-        if(sys.maxsize > 2**32):
+        if self.os is OperatingSystem.WIN:
+            # Only 32-bit binaries for Windows, so have to ask le registry...
+            return self.getArchitectureWindows()
+        else:
+            if(sys.maxsize > 2**32):
+                return Architecture.x64
+            else:
+                return Architecture.x32
+    
+    """
+    Windows special case for getting architecture
+    """
+    def getArchitectureWindows(self):
+        from _winreg import *
+        softwarekey = OpenKey(HKEY_LOCAL_MACHINE, "SOFTWARE")
+        microsoftkey = OpenKey(softwarekey, "Microsoft")        
+        windowskey = OpenKey(microsoftkey, "Windows NT")
+        versionkey = OpenKey(windowskey, "CurrentVersion")
+        value = QueryValueEx(versionkey, "BuildLabEx")
+        CloseKey(versionkey)
+        CloseKey(windowskey)
+        CloseKey(microsoftkey)
+        CloseKey(softwarekey)
+        if "amd64" in value:
             return Architecture.x64
         else:
             return Architecture.x32
