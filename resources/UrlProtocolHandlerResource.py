@@ -1,6 +1,8 @@
 from resource.ResourceBase import ResourceBase
 from env.enums import OperatingSystem
 import g
+from feedback.LogLevels import LogLevels
+from copy import copy
 
 class UrlProtocolHandlerResource(ResourceBase):
     
@@ -49,16 +51,38 @@ MimeType=x-scheme-handler/%s
         executable = g.jinn.getInstallTargetFile()
         if g.jinn.isDevMode():
             executable = "python " + self.getCurrentFile()
+        just_executable = copy(executable)
         if action is not None:
-            executable = executable + " -action " + action["Ref"]
+            a = ""
+            if self.os is OperatingSystem.WIN:
+                a = "\"" # If windows, each argument needs to be wrapped in quotes
+            executable = a + executable + a + " " + a + "-action" + a + " " + a + action["Ref"] + a
         
         if self.os is OperatingSystem.LIN:
             a = self.saveToFile(self.getLinuxFileDirectory() + self.sep() + self.getLinuxFileName(protocol), self.getLinuxFileContents(terminal, executable, name, description, protocol))
             b = self.appendToFile(self.getLinuxConfigFile(), self.getLinuxConfigString(protocol))
             return a and b
         elif self.os is OperatingSystem.WIN:
-            # Fudge for now
-            return True
+            try:
+                from _winreg import *
+                importkey = CreateKey(HKEY_CLASSES_ROOT, protocol)
+                SetValue(HKEY_CLASSES_ROOT, protocol, REG_SZ, "URL:%s Handler" % protocol)
+                SetValueEx(importkey, "URL Protocol", REG_SZ, 0, "")
+                iconkey = CreateKey(importkey, "DefaultIcon")
+                SetValue(importkey, "DefaultIcon", REG_SZ, "%s,1" % just_executable)
+                shellkey =  CreateKey(importkey, "shell")
+                openkey = CreateKey(shellkey, "open")
+                commandkey = CreateKey(openkey, "command")
+                SetValue(openkey, "command", REG_SZ, "\"%s\" \"%s1\"" % (executable, "%"))
+                CloseKey(commandkey)
+                CloseKey(openkey)
+                CloseKey(shellkey)
+                CloseKey(iconkey)
+                CloseKey(importkey)
+                return True
+            except Exception as e:
+                g.feedback.log(LogLevels.ERROR, "Exception playing with the registry, %s" % e)
+                return False
         
     def doUninstall(self):
         protocol = self.getProperty("Protocol")
@@ -69,3 +93,21 @@ MimeType=x-scheme-handler/%s
             if not self.removeFromFile(self.getLinuxConfigFile(), self.getLinuxConfigString(protocol)):
                 return False
             return True
+        elif self.os is OperatingSystem.WIN:
+            try:
+                from _winreg import *
+                importkey = OpenKey(HKEY_CLASSES_ROOT, "importio")
+                shellkey = OpenKey(importkey, "shell")
+                openkey = OpenKey(shellkey, "open")
+                DeleteKey(openkey, "command")
+                CloseKey(openkey)
+                DeleteKey(shellkey, "open")
+                CloseKey(shellkey)
+                DeleteKey(importkey, "shell")
+                DeleteKey(importkey, "DefaultIcon")
+                CloseKey(importkey)
+                DeleteKey(HKEY_CLASSES_ROOT, "importio")
+                return True
+            except Exception as e:
+                g.feedback.log(LogLevels.ERROR, "Exception playing with the registry, %s" % e)
+                return False
