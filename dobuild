@@ -1,0 +1,2 @@
+#!/bin/bash
+python $PYINST_HOME/utils/Build.py JinnLinux.spec

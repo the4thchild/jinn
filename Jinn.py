@@ -274,7 +274,7 @@ A Java installer"""
         g.feedback.log(LogLevels.DEBUG, "Current directory: %s" % currentdir)
         g.feedback.log(LogLevels.DEBUG, "Target dir: %s" % targetdir)
         
-        return targetdir is currentdir
+        return targetdir == currentdir
     
     """
     Take the sys args and turn them into a string stored on the object
@@ -339,8 +339,12 @@ Options:
         
         # Analyse the sys args to figure out what to do
         if len(sys.argv) < 2:
-            # No extra args, want to run the default action
-            return self.runDefaultAction()
+            # No extra args, if we are installed we want to run the default action.
+            # Otherwise this is the first run from download, so do install
+            if self.isInstalled():
+                return self.runDefaultAction()
+            else:
+                self.doInstall()
         elif sys.argv[1] == "-install":
             return self.doInstall()
         elif sys.argv[1] == "-uninstall":
