@@ -242,7 +242,9 @@ A Java installer"""
         
         # Run the new executable
         g.feedback.log(LogLevels.DEBUG, "Code copied to %s, executing" % targetFile)
-        cmd = "./" + self.getExecutableName() + " -install"
+        cmd = self.getExecutableName() + " -install"
+        if self.os == OperatingSystem.LIN or self.os == OperatingSystem.OSX:
+            cmd = "./" + cmd
         g.feedback.log(LogLevels.DEBUG, "Run command: %s" % cmd)
         os.system(cmd)
         return 0
@@ -340,8 +342,10 @@ A Java installer"""
     Get the name of the executabl
     """
     def getExecutableName(self):
-        # TODO: Platform dependency here
-        return "builder.bin"
+        if self.os == OperatingSystem.WIN:
+            return self.manifest.jinn.name + ".jinn.exe"
+        else:
+            return self.manifest.jinn.name + ".jinn"
 
     """
     Get the file we wish to install to
