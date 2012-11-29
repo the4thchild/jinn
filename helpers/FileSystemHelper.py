@@ -146,7 +146,7 @@ class FileSystemHelper(object):
         try:
             if os.path.isdir(path):
                 g.feedback.log(LogLevels.DEBUG, "Path %s is a directory, deleting" % path)
-                shutil.rmtree(path)
+                shutil.rmtree(path, onerror=onerror)
             elif os.path.islink(path):
                 g.feedback.log(LogLevels.DEBUG, "Path %s is a symlink, unlinking" % path)
                 os.unlink(path)
@@ -169,3 +169,23 @@ class FileSystemHelper(object):
             return True
         except:
             return False
+    
+# http://stackoverflow.com/questions/2656322/python-shutil-rmtree-fails-on-windows-with-access-is-denied
+def onerror(func, path, exc_info):
+    """
+    Error handler for ``shutil.rmtree``.
+
+    If the error is due to an access error (read only file)
+    it attempts to add write permission and then retries.
+
+    If the error is for another reason it re-raises the error.
+
+    Usage : ``shutil.rmtree(path, onerror=onerror)``
+    """
+    import stat
+    if not os.access(path, os.W_OK):
+        # Is the error an access error ?
+        os.chmod(path, stat.S_IWUSR)
+        func(path)
+    else:
+        raise
