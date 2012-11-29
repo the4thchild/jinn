@@ -51,6 +51,8 @@ A Java installer"""
         else:
             # Not specified, need something to stop errors, so us this
             g.feedback = FeedbackBase()
+            
+        g.feedback.log(LogLevels.DEBUG, "Started up. OS: %s; Architecture: %s" % (OperatingSystem().getOperatingSystem(self.os), Architecture().getArchitecture(self.arch)))
     
     """
     Gets the current OS
@@ -64,6 +66,7 @@ A Java installer"""
         elif p == "Linux":
             return OperatingSystem.LIN
         else:
+            g.feedback.log(LogLevels.ERROR, "Unable to work with operating system %s" % p)
             raise OperatingSystemNotFoundException(p)
     
     """
@@ -76,6 +79,7 @@ A Java installer"""
         elif a == "32bit":
             return Architecture.x32
         else:
+            g.feedback.log(LogLevels.ERROR, "Unable to work with architecture %s" % a)
             raise ArchitectureNotFoundException(a)
     
     """
@@ -98,13 +102,18 @@ A Java installer"""
     A helper which sets up the system before a run
     """
     def setupSystem(self):
+        
+        g.feedback.log(LogLevels.DEBUG, "Setting up the system")
+        
         # Make sure we are installed
         if not self.isInstalled():
+            g.feedback.log(LogLevels.DEBUG, "We aren't installed, so installing")
             status = self.doInstall()
             if status != 0:
                 g.feedback.log(LogLevels.ERROR, "Tried installing but failed horribly")
                 g.feedback.userMessage("Installation failed (1) - please contact distributor")
                 return status
+            g.feedback.log(LogLevels.DEBUG, "Installation succeeded")
         else:
             self.loadManifest()
             
@@ -114,66 +123,90 @@ A Java installer"""
     Runs the default action in the jinn
     """
     def runDefaultAction(self):
+        g.feedback.log(LogLevels.DEBUG, "Running default action")
+        
         self.setupSystem()
         
-        g.feedback.log(LogLevels.DEBUG, "Default action")
+        g.feedback.log(LogLevels.DEBUG, "Default action execution commencing")
         try:
             self.manifest.runDefaultAction(self.args)
+            g.feedback.log(LogLevels.DEBUG, "Run default action executed successfully")
             return 0
-        except:
+        except Exception as e:
+            g.feedback.log(LogLevels.ERROR, "Running default action threw exception %s" % e)
             return 1
     
     """
     Runs a specific action within the jinn
     """
     def runAction(self, action):
+        
+        g.feedback.log(LogLevels.DEBUG, "Running %s action" % action)
+        
         self.setupSystem()
             
         g.feedback.log(LogLevels.DEBUG, "Run action %s" % action)
         try:
             self.manifest.runAction(action, self.args)
+            g.feedback.log(LogLevels.DEBUG, "Running action %s successfully completed" % action)
             return 0
-        except:
+        except Exception as e:
+            g.feedback.log(LogLevels.ERROR, "Running action %s threw exception %s" % (action, e))
             return 1
     
     """
     Are we in dev mode?
     """
     def isDevMode(self):
-        return options.version is "DEV"
+        isDev = options.version is "DEV"
+        g.feedback.log(LogLevels.DEBUG, "Dev mode? %s" % str(isDev))
+        return isDev
 
     """
     Checks the manifests for updates
     """
     def doUpdate(self):
         
+        g.feedback.log(LogLevels.DEBUG, "Starting update procedure")
+        
         # No update if the version number is the same
         if self.manifest.jinn.version == self.new_manifest.jinn.version:
             g.feedback.log(LogLevels.DEBUG, "New and current manifest versions are %s and %s, so skipping update as they are identical" % (self.manifest.jinn.version, self.new_manifest.jinn.version))
             return True
         
+        g.feedback.log(LogLevels.DEBUG, "Setting installation status across manifests")
         # Initially, set the resources that are installed on the new manifest already
         if not self.new_manifest.setInstallStatus(self.manifest.resources):
+            g.feedback.log(LogLevels.ERROR, "Failed to set install status")
             return False
         
+        g.feedback.log(LogLevels.DEBUG, "Installing new resources")
         # First, install resources that are new
         if not self.new_manifest.installNewResources(self.manifest.resources):
+            g.feedback.log(LogLevels.ERROR, "Failed to install new resources")
             return False
         
+        g.feedback.log(LogLevels.DEBUG, "Uninstalling removed resources0")
         # Second, uninstall resources that are gone
         if not self.new_manifest.uninstallRemovedResources(self.manifest.resources):
+            g.feedback.log(LogLevels.ERROR, "Removing resources failed")
             return False
         
+        g.feedback.log(LogLevels.DEBUG, "Updating changed resources")
         # Third, update resources that are new version
         if not self.new_manifest.updateResources(self.manifest.resources):
+            g.feedback.log(LogLevels.ERROR, "Updating changed resources failed")
             return False
         
+        g.feedback.log(LogLevels.DEBUG, "Saving manifest")
         # Finally, transition the manifest over to the new one
         self.manifest = self.new_manifest
         if not self.manifest.save():
+            g.feedback.log(LogLevels.ERROR, "Unable to save updated manifest")
             return False
         
         # Done!
+        g.feedback.log(LogLevels.DEBUG, "Update complete")
         return True
             
 
@@ -183,23 +216,28 @@ A Java installer"""
     def doCopy(self):
         g.feedback.log(LogLevels.DEBUG, "We are not in the correct directory, so installing to the correct location")
         
-        if not self.exists(self.getInstallTargetFile()):
+        targetFile = self.getInstallTargetFile()
+        g.feedback.log(LogLevels.DEBUG, "Target file is %s" % targetFile)
+        d = self.getInstallTargetDirectory()
+        g.feedback.log(LogLevels.DEBUG, "Target directory is %s" % d)
+        if not self.exists(targetFile):
             # Make the jinn install directory
-            d = self.getInstallTargetDirectory()
             if not self.makeDirectory(d):
                 g.feedback.log(LogLevels.ERROR, "Unable to make directory %s to install to" % d)
                 return 1
             
             # Copy this binary into it
             frm = self.getCurrentFile()
-            to = self.getInstallTargetFile()
+            to = targetFile
+            g.feedback.log(LogLevels.DEBUG, "Copying from %s to %s" % (frm, to))
             if not self.copyFile(frm, to):
                 g.feedback.log(LogLevels.ERROR, "Unable to copy %s to %s" % (frm,to))
                 return 1
         
         # Change into that directory
-        if not self.changeDirectory(self.getInstallTargetDirectory()):
-            g.feedback.log(LogLevels.ERROR, "Unable to change to the InstallTargetDirectory")
+        g.feedback.log(LogLevels.DEBUG, "Changing to %s" % d)
+        if not self.changeDirectory(d):
+            g.feedback.log(LogLevels.ERROR, "Unable to change to the InstallTargetDirectory %s" % d)
             return 1
         
         # Run the new executable
@@ -213,15 +251,21 @@ A Java installer"""
     Runs an installation of this jinn
     """
     def doInstall(self):
+        
+        g.feedback.log(LogLevels.DEBUG, "Beginning installation")
+        
         # We need the manifest first of all
         self.loadManifest()
         
         # Hard code here to not happen for dev
-        if not self.isCorrectDirectory() and not self.isDevMode():
+        correctDir = self.isCorrectDirectory()
+        g.feedback.log(LogLevels.DEBUG, "Are we in correct directory? %s" % str(correctDir))
+        if not correctDir and not self.isDevMode():
             return self.doCopy()
     
         # Make sure we are in the right directory
         installDir = self.getInstallTargetDirectory()
+        g.feedback.log(LogLevels.DEBUG, "Target install dir is %s" % installDir)
         if not self.changeDirectory(installDir) and not self.isDevMode():
             g.feedback.log(LogLevels.ERROR, "Unable to change to where we thought we were installed, %s" % installDir)
             return 1
@@ -234,6 +278,7 @@ A Java installer"""
         g.feedback.log(LogLevels.DEBUG, "Installing")
         
         if not self.makeDirectory(".jinn"):
+            g.feedback.log(LogLevels.ERROR, "Unable to make .jinn directory")
             return 1
         
         if not self.manifest.save():
@@ -242,8 +287,10 @@ A Java installer"""
         
         try:
             if self.manifest.installResources():
+                g.feedback.log(LogLevels.DEBUG, "Install resources succeeded")
                 return 0
             else:
+                g.feedback.log(LogLevels.ERROR, "Install resources failed")
                 return 1
         except Exception as e:
             g.feedback.log(LogLevels.ERROR, "Unable to install resources: %s" % e)
@@ -253,6 +300,9 @@ A Java installer"""
     Runs uninstallation
     """
     def doUninstall(self):
+        
+        g.feedback.log(LogLevels.DEBUG, "Doing uninstallation")
+        
         if not self.isInstalled():
             g.feedback.log(LogLevels.ERROR, "This jinn is not installed, so cannot be uninstalled")
             g.feedback.userMessage("Uninstallation failed (4) - please contact distributor")
@@ -268,8 +318,10 @@ A Java installer"""
                     g.feedback.userMessage("Uninstallation finished. To completely erase this application, please delete the directory %s" % self.getInstallTargetDirectory())
                     return 0
                 else:
+                    g.feedback.log(LogLevels.ERROR, "Failed to delete .jinn directory, will think its still installed")
                     return 1
             else:
+                g.feedback.log(LogLevels.ERROR, "Uninstallation failed")
                 return 1
         except Exception as e:
             g.feedback.log(LogLevels.ERROR, "Unable to uninstall: %s" % e)
@@ -322,6 +374,7 @@ A Java installer"""
             args.pop(0)
             i += 1
         self.args = " ".join(map(str, args))
+        g.feedback.log(LogLevels.DEBUG, "System args: %s" % self.args)
     
     """
     Check whether or not this jinn is currently installed
