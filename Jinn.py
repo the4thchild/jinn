@@ -95,7 +95,7 @@ A Java installer"""
         microsoftkey = OpenKey(softwarekey, "Microsoft")        
         windowskey = OpenKey(microsoftkey, "Windows NT")
         versionkey = OpenKey(windowskey, "CurrentVersion")
-        value = QueryValueEx(versionkey, "BuildLabEx")
+        value = QueryValueEx(versionkey, "BuildLabEx")[0]
         CloseKey(versionkey)
         CloseKey(windowskey)
         CloseKey(microsoftkey)
