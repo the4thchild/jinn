@@ -304,6 +304,7 @@ A Java installer"""
 %s
 Version: %s
 """ % (self.header, options.version))
+        return 0
     
     """
     Output the help content
