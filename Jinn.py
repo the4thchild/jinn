@@ -241,7 +241,7 @@ A Java installer"""
             return 1
         
         # Run the new executable
-        g.feedback.log(LogLevels.DEBUG, "Code copied to %s, executing" % to)
+        g.feedback.log(LogLevels.DEBUG, "Code copied to %s, executing" % targetFile)
         cmd = "./" + self.getExecutableName() + " -install"
         g.feedback.log(LogLevels.DEBUG, "Run command: %s" % cmd)
         os.system(cmd)
