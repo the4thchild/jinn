@@ -36,7 +36,7 @@ class NPAPIPluginResource(FileResource):
             except:
                 return False
         elif self.os is OperatingSystem.WIN:
-            cmd = "regsvr32 " + self.getProperty("Path") + self.sep() + self.getMyFileName()
+            cmd = "regsvr32 /s " + self.getProperty("Path") + self.sep() + self.getMyFileName()
             res = os.system(cmd)
             if res < 1:
                 return True
@@ -51,7 +51,7 @@ class NPAPIPluginResource(FileResource):
                 return False
             return True
         elif self.os is OperatingSystem.WIN:
-            cmd = "regsvr32 -u " + self.getProperty("Path") + self.sep() + self.getMyFileName()
+            cmd = "regsvr32 /s -u " + self.getProperty("Path") + self.sep() + self.getMyFileName()
             res = os.system(cmd)
             if res < 1:
                 return True
