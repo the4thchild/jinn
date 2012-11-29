@@ -74,12 +74,15 @@ A Java installer"""
     """
     def getArchitecture(self):
         if self.os is OperatingSystem.WIN:
-            # Only 32-bit binaries for Windows, so have to ask le registry...
+            g.feedback.log(LogLevels.DEBUG, "Getting architecture, we are windows, so asking the registry")
             return self.getArchitectureWindows()
         else:
+            g.feedback.log(LogLevels.DEBUG, "Working out if we are running 32 or 64 bit")
             if(sys.maxsize > 2**32):
+                g.feedback.log(LogLevels.DEBUG, "Decided 64 bit")
                 return Architecture.x64
             else:
+                g.feedback.log(LogLevels.DEBUG, "Decided 32 bit")
                 return Architecture.x32
     
     """
@@ -97,8 +100,10 @@ A Java installer"""
         CloseKey(microsoftkey)
         CloseKey(softwarekey)
         if "amd64" in value:
+            g.feedback.log(LogLevels.DEBUG, "From value %s, decided we are 64 bit" % value)
             return Architecture.x64
         else:
+            g.feedback.log(LogLevels.DEBUG, "From value %s, decided we are 32 bit" % value)
             return Architecture.x32
     
     """
