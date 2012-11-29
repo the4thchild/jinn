@@ -145,17 +145,17 @@ class FileSystemHelper(object):
     def delete(self, path):
         try:
             if os.path.isdir(path):
-                # Delete if a directory
+                g.feedback.log(LogLevels.DEBUG, "Path %s is a directory, deleting" % path)
                 shutil.rmtree(path)
             elif os.path.islink(path):
-                # Unlink if a symlink
+                g.feedback.log(LogLevels.DEBUG, "Path %s is a symlink, unlinking" % path)
                 os.unlink(path)
             elif os.path.exists(path):
-                # Delete if a file
+                g.feedback.log(LogLevels.DEBUG, "Path %s is a file, deleting" % path)
                 os.remove(path)
             return True
-        except:
-            g.feedback.log(LogLevels.ERROR, "Unable to delete file or directory at %s" % path)
+        except Exception as e:
+            g.feedback.log(LogLevels.ERROR, "Unable to delete file or directory at %s: %s" % (path, e))
             return False
         
     """
