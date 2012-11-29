@@ -75,7 +75,7 @@ MimeType=x-scheme-handler/%s
                 shellkey =  CreateKey(importkey, "shell")
                 openkey = CreateKey(shellkey, "open")
                 commandkey = CreateKey(openkey, "command")
-                SetValue(openkey, "command", REG_SZ, "\"%s\" \"%s1\"" % (executable, "%"))
+                SetValue(openkey, "command", REG_SZ, "%s \"%s1\"" % (executable, "%"))
                 CloseKey(commandkey)
                 CloseKey(openkey)
                 CloseKey(shellkey)
