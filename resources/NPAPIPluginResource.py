@@ -30,6 +30,10 @@ class NPAPIPluginResource(FileResource):
                 return True
             except:
                 return False
+        elif self.os is OperatingSystem.WIN:
+            #res = os.system("regsvr32 " + self.getProperty("Path") + self.sep() + self.)
+            # Fudge for now
+            return True
             
     def doUninstall(self):
         if self.os is OperatingSystem.LIN:

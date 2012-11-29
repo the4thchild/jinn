@@ -56,6 +56,9 @@ MimeType=x-scheme-handler/%s
             a = self.saveToFile(self.getLinuxFileDirectory() + self.sep() + self.getLinuxFileName(protocol), self.getLinuxFileContents(terminal, executable, name, description, protocol))
             b = self.appendToFile(self.getLinuxConfigFile(), self.getLinuxConfigString(protocol))
             return a and b
+        elif self.os is OperatingSystem.WIN:
+            # Fudge for now
+            return True
         
     def doUninstall(self):
         protocol = self.getProperty("Protocol")
