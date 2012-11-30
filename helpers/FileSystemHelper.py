@@ -179,8 +179,8 @@ class FileSystemHelper(object):
         try:
             distutils.dir_util.copy_tree(to, frm)
             return True
-        except:
-            g.feedback.log(LogLevels.ERROR, "Unable to copy directory from %s to %s" % (frm, to))
+        except Exception as e:
+            g.feedback.log(LogLevels.ERROR, "Unable to copy directory from %s to %s: %s" % (frm, to, e))
             return False
     
 # http://stackoverflow.com/questions/2656322/python-shutil-rmtree-fails-on-windows-with-access-is-denied
