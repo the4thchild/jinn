@@ -282,6 +282,13 @@ A Java installer"""
         
         g.feedback.log(LogLevels.INFO, "Beginning installation")
         
+        answer = g.feedback.askForInput("Proceed with installation (y/n)?")
+        if answer != "y" and answer != "n":
+            self.doInstall()  
+        elif answer == "n":
+            g.feedback.log(LogLevels.INFO, "User did not proceed")
+            return 1
+        
         # We need the manifest first of all
         self.loadManifest()
         

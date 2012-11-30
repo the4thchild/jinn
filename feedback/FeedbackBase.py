@@ -81,6 +81,12 @@ class FeedbackBase(object):
         return True
     
     """
+    Ask the user for input
+    """
+    def askForInput(self, question):
+        return None
+    
+    """
     Whether or not the progress is currently started
     """
     def isStarted(self):
