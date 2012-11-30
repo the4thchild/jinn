@@ -1,21 +1,32 @@
 
-class LogLevels(object):
-    TRACE = 1
-    DEBUG = 2
-    INFO = 3
-    WARN = 4
-    ERROR = 5
+class LogLevels:
+    DEBUG = 1
+    INFO  = 2
+    WARN  = 3
+    ERROR = 4
     
-    def getLevel(self, level):
+    @staticmethod
+    def getLevel(level):
         if level == 1:
-            return "TRACE"
-        elif level == 2:
             return "DEBUG"
-        elif level == 3:
+        elif level == 2:
             return "INFO"
-        elif level == 4:
+        elif level == 3:
             return "WARN"
-        elif level == 5:
+        elif level == 4:
             return "ERROR"
         else:
-            return "LOG"
+            return "INFO"
+    
+    @staticmethod 
+    def getLevelFromString(levelStr):
+        if levelStr == "DEBUG":
+            return 1
+        elif levelStr == "INFO":
+            return 2
+        elif levelStr == "WARN":
+            return 3
+        elif levelStr == "ERROR":
+            return 4
+        else:
+            return 2

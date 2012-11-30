@@ -50,6 +50,9 @@ A Java installer"""
             # Not specified, need something to stop errors, so us this
             g.feedback = FeedbackBase()
             
+        # Setup min log level
+        g.feedback.minLogLevel = LogLevels.getLevelFromString(options.min_log_level)
+            
         self.os = self.getOperatingSystem()
         self.arch = self.getArchitecture()
             
@@ -128,17 +131,17 @@ A Java installer"""
     """
     def setupSystem(self):
         
-        g.feedback.log(LogLevels.DEBUG, "Setting up the system")
+        g.feedback.log(LogLevels.INFO, "Setting up the system")
         
         # Make sure we are installed
         if not self.isInstalled():
-            g.feedback.log(LogLevels.DEBUG, "We aren't installed, so installing")
+            g.feedback.log(LogLevels.INFO, "We aren't installed, so installing")
             status = self.doInstall()
             if status != 0:
                 g.feedback.log(LogLevels.ERROR, "Tried installing but failed horribly")
                 g.feedback.userMessage("Installation failed (1) - please contact distributor")
                 return status
-            g.feedback.log(LogLevels.DEBUG, "Installation succeeded")
+            g.feedback.log(LogLevels.INFO, "Installation succeeded")
         else:
             self.loadManifest()
             
@@ -167,9 +170,7 @@ A Java installer"""
     def runAction(self, action):
         
         g.feedback.log(LogLevels.DEBUG, "Running %s action" % action)
-        
         self.setupSystem()
-            
         g.feedback.log(LogLevels.DEBUG, "Run action %s" % action)
         try:
             self.manifest.runAction(action, self.args)
