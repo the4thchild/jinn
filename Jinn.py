@@ -498,5 +498,5 @@ def main():
 
 if __name__ == '__main__':
     status = main()
-    g.feedback.userMessage("Jinn exiting with code %s" % str(status))
+    g.feedback.log(LogLevels.DEBUG, "Jinn exiting with code %s" % str(status))
     sys.exit(status)
