@@ -50,10 +50,13 @@ A Java installer"""
             # Not specified, need something to stop errors, so us this
             g.feedback = FeedbackBase()
             
+        # Setup min log level
+        g.feedback.minLogLevel = LogLevels.getLevelFromString(options.min_log_level)
+            
         self.os = self.getOperatingSystem()
         self.arch = self.getArchitecture()
             
-        g.feedback.log(LogLevels.DEBUG, "Started up. OS: %s; Architecture: %s" % (OperatingSystem().getOperatingSystem(self.os), Architecture().getArchitecture(self.arch)))
+        g.feedback.log(LogLevels.INFO, "Started up. OS: %s; Architecture: %s" % (OperatingSystem().getOperatingSystem(self.os), Architecture().getArchitecture(self.arch)))
     
     """
     Gets the current OS
@@ -112,15 +115,15 @@ A Java installer"""
     """
     def loadManifest(self):
                 
-        g.feedback.log(LogLevels.DEBUG, "Loading new manifest from %s" % options.manifest)
+        g.feedback.log(LogLevels.INFO, "Loading new manifest from %s" % options.manifest)
         self.new_manifest = Manifest(self.os, self.arch, options.manifest, options.manifest_is_url)
         
         if self.isInstalled():
             manifest_file = ".jinn" + self.sep() + "current_manifest.json"
-            g.feedback.log(LogLevels.DEBUG, "Loading manifest from %s" % manifest_file)
+            g.feedback.log(LogLevels.INFO, "Loading manifest from %s" % manifest_file)
             self.manifest = Manifest(self.os, self.arch, manifest_file, False, True)
         else:
-            g.feedback.log(LogLevels.DEBUG, "Loading manifest from new manifest, as not installed")
+            g.feedback.log(LogLevels.INFO, "Loading manifest from new manifest, as not installed")
             self.manifest = self.new_manifest
     
     """
@@ -128,17 +131,17 @@ A Java installer"""
     """
     def setupSystem(self):
         
-        g.feedback.log(LogLevels.DEBUG, "Setting up the system")
+        g.feedback.log(LogLevels.INFO, "Setting up the system")
         
         # Make sure we are installed
         if not self.isInstalled():
-            g.feedback.log(LogLevels.DEBUG, "We aren't installed, so installing")
+            g.feedback.log(LogLevels.INFO, "We aren't installed, so installing")
             status = self.doInstall()
             if status != 0:
                 g.feedback.log(LogLevels.ERROR, "Tried installing but failed horribly")
                 g.feedback.userMessage("Installation failed (1) - please contact distributor")
                 return status
-            g.feedback.log(LogLevels.DEBUG, "Installation succeeded")
+            g.feedback.log(LogLevels.INFO, "Installation succeeded")
         else:
             self.loadManifest()
             
@@ -166,14 +169,12 @@ A Java installer"""
     """
     def runAction(self, action):
         
-        g.feedback.log(LogLevels.DEBUG, "Running %s action" % action)
-        
+        g.feedback.log(LogLevels.INFO, "Running %s action" % action)
         self.setupSystem()
-            
         g.feedback.log(LogLevels.DEBUG, "Run action %s" % action)
         try:
             self.manifest.runAction(action, self.args)
-            g.feedback.log(LogLevels.DEBUG, "Running action %s successfully completed" % action)
+            g.feedback.log(LogLevels.INFO, "Running action %s successfully completed" % action)
             return 0
         except Exception as e:
             g.feedback.log(LogLevels.ERROR, "Running action %s threw exception %s" % (action, e))
@@ -184,7 +185,7 @@ A Java installer"""
     """
     def isDevMode(self):
         isDev = options.version is "DEV"
-        g.feedback.log(LogLevels.DEBUG, "Dev mode? %s" % str(isDev))
+        g.feedback.log(LogLevels.WARN, "Dev mode? %s" % str(isDev))
         return isDev
 
     """
@@ -205,19 +206,19 @@ A Java installer"""
             g.feedback.log(LogLevels.ERROR, "Failed to set install status")
             return False
         
-        g.feedback.log(LogLevels.DEBUG, "Installing new resources")
+        g.feedback.log(LogLevels.INFO, "Installing new resources")
         # First, install resources that are new
         if not self.new_manifest.installNewResources(self.manifest.resources):
             g.feedback.log(LogLevels.ERROR, "Failed to install new resources")
             return False
         
-        g.feedback.log(LogLevels.DEBUG, "Uninstalling removed resources")
+        g.feedback.log(LogLevels.INFO, "Uninstalling removed resources")
         # Second, uninstall resources that are gone
         if not self.new_manifest.uninstallRemovedResources(self.manifest.resources):
             g.feedback.log(LogLevels.ERROR, "Removing resources failed")
             return False
         
-        g.feedback.log(LogLevels.DEBUG, "Updating changed resources")
+        g.feedback.log(LogLevels.INFO, "Updating changed resources")
         # Third, update resources that are new version
         if not self.new_manifest.updateResources(self.manifest.resources):
             g.feedback.log(LogLevels.ERROR, "Updating changed resources failed")
@@ -311,7 +312,7 @@ A Java installer"""
     """
     def doInstall(self):
         
-        g.feedback.log(LogLevels.DEBUG, "Beginning installation")
+        g.feedback.log(LogLevels.INFO, "Beginning installation")
         
         # We need the manifest first of all
         self.loadManifest()
@@ -360,7 +361,7 @@ A Java installer"""
     """
     def doUninstall(self):
         
-        g.feedback.log(LogLevels.DEBUG, "Doing uninstallation")
+        g.feedback.log(LogLevels.INFO, "Doing uninstallation")
         
         if not self.isInstalled():
             g.feedback.log(LogLevels.ERROR, "This jinn is not installed, so cannot be uninstalled")
@@ -398,7 +399,7 @@ A Java installer"""
             return self.getHomeDirectory() + self.getDirectorySeparator() + self.manifest.jinn.name
 
     """
-    Get the name of the executabl
+    Get the name of the executable
     """
     def getExecutableName(self):
         if self.os == OperatingSystem.WIN:

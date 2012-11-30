@@ -6,10 +6,12 @@ Base class for feedback to the user
 """
 class FeedbackBase(object):
 
+    
+
     def __init__(self):
         self.progressAmount = None
-        
         self.progressChangeEvent = Event()
+        self.minLogLevel = None
     
     """
     Handles a message to be sent to the user
@@ -21,6 +23,13 @@ class FeedbackBase(object):
     Handle a log message that needs to be sent
     """
     def log(self, logLevel, logMessage):
+        if logLevel >= self.minLogLevel: 
+            self.showLog(logLevel, logMessage)
+    
+    """
+    Handle a log message that needs to be sent
+    """
+    def showLog(self, logLevel, logMessage):
         pass
 
     """

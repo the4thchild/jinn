@@ -20,5 +20,5 @@ class ConsoleFeedback(FeedbackBase):
     def userMessage(self, message):
         print "MSG: %s" % message
     
-    def log(self, logLevel, message):
+    def showLog(self, logLevel, message):
         print "%s: %s" % (LogLevels().getLevel(logLevel), message)
