@@ -212,7 +212,7 @@ class Manifest(FileSystemHelper):
         for old_res in old_resources:
             new_res = self.getResourceForId(old_res.id)
             if new_res is not None:
-                if new_res.version != old_res.version:
+                if new_res.version != old_res.version and new_res.isUpdatable(old_res):
                     g.feedback.log(LogLevels.DEBUG, "Resource with ID %s is changing version from %s to %s" % (new_res.id, old_res.version, new_res.version))
                     if not old_res.doUninstall():
                         g.feedback.log(LogLevels.DEBUG, "Failed to uninstall updating resource with ID %s" % new_res.id)

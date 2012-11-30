@@ -156,3 +156,10 @@ class ResourceWrapper(ActivityWrapper):
                             g.feedback.log(LogLevels.ERROR, "Unable to install %s, dependency %s failed to install" % (self.id, res.name))
                             return False
         return True
+    
+    """
+    Allows this resource, being the new one, to decide if it provides
+    an update against the old resource thats passed in
+    """
+    def isUpdatable(self, old_self):
+        return self.type.isUpdatable(old_self.type)

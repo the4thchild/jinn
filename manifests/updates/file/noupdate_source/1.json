@@ -1,0 +1,24 @@
+{
+	"Jinn": {
+		"AppName": "UpdateFileUpdateSourceExample",
+        "Version" : 1
+    },
+	"Description": "Update test, updating a file",
+	"Resources": {
+
+		"ExampleFile": {
+			"Type": "Jinn::Resource::File",
+			"Name": "Test File",
+			"Description": "A basic sample file",
+			"Properties": {
+				"Source": "http://www.google.com/humans.txt",
+				"Path": "Sample",
+				"Name": "Humans.txt"
+			},
+			"Version": 1
+		}
+		
+	},
+	"Actions": {
+	}
+}

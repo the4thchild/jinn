@@ -36,3 +36,6 @@ class FileResource(ResourceBase):
             name = self.getFilenameFromUrl(self.getProperty("Source"))
             
         return self.delete(path + self.sep() + name)
+    
+    def isUpdatable(self, old_self):
+        return self.getProperty("Source") != old_self.getProperty("Source")

@@ -211,7 +211,7 @@ A Java installer"""
             g.feedback.log(LogLevels.ERROR, "Failed to install new resources")
             return False
         
-        g.feedback.log(LogLevels.DEBUG, "Uninstalling removed resources0")
+        g.feedback.log(LogLevels.DEBUG, "Uninstalling removed resources")
         # Second, uninstall resources that are gone
         if not self.new_manifest.uninstallRemovedResources(self.manifest.resources):
             g.feedback.log(LogLevels.ERROR, "Removing resources failed")

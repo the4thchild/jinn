@@ -11,3 +11,6 @@ class ResourceBase(ActivityBase):
     
     def doUninstall(self):
         return 0
+    
+    def isUpdatable(self, old_self):
+        return True
