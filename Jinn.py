@@ -260,7 +260,7 @@ A Java installer"""
             else:
                 g.feedback.log(LogLevels.DEBUG, "Target executable exists, so running it")
             
-            cmd = "." + targetDir + " -install"
+            cmd = "." + executable + " -install"
             g.feedback.log(LogLevels.DEBUG, "Executing command: %s" % cmd)
             res = os.system(cmd)
             if res < 1:
