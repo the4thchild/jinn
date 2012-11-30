@@ -245,22 +245,23 @@ A Java installer"""
             g.feedback.log(LogLevels.DEBUG, "Copying in OS X mode")
             
             targetDir = self.getInstallTargetDirectory()
+            copyTargetDir = targetDir + self.sep() + ".." + self.sep() + ".."
             currentDir = self.getCurrentDirectory() + self.sep() + ".." + self.sep() + ".."
             
-            executable = targetDir + self.sep() + "Contents" + self.sep() + "MacOS" + self.sep() + self.getExecutableName()
+            executable = targetDir + self.sep() + self.getExecutableName()
             
             g.feedback.log(LogLevels.DEBUG, "Target executable: %s" % executable)
             
             if not self.exists(executable):
                 g.feedback.log(LogLevels.DEBUG, "Target executable does not exist, copying")
-                if not self.makeDirectory(targetDir):
+                if not self.makeDirectory(copyTargetDir):
                     return False
-                if not self.copyDir(currentDir, targetDir):
+                if not self.copyDir(currentDir, copyTargetDir):
                     return False
             else:
                 g.feedback.log(LogLevels.DEBUG, "Target executable exists, so running it")
             
-            cmd = "." + executable + " -install"
+            cmd = executable + " -install"
             g.feedback.log(LogLevels.DEBUG, "Executing command: %s" % cmd)
             res = os.system(cmd)
             if res < 1:
@@ -392,7 +393,7 @@ A Java installer"""
         if self.isDevMode():
             return self.getCurrentDirectory()
         elif self.os is OperatingSystem.OSX:
-            return self.getHomeDirectory() + self.sep() + "Applications" + self.sep() + self.manifest.jinn.name + ".app"
+            return self.getHomeDirectory() + self.sep() + "Applications" + self.sep() + self.manifest.jinn.name + ".app" + self.sep() + "Contents" + self.sep() + "MacOS"
         else:
             return self.getHomeDirectory() + self.getDirectorySeparator() + self.manifest.jinn.name
 
