@@ -8,18 +8,15 @@
 	"Description": "File resource test",
 	"Resources": {
 	
-		"MyFle": {
+		"MyFile": {
+		    "Version": "1.0.0.0",
 			"Type": "Jinn::Resource::File",
 			"Name": "The test file",
 			"Description": "File we need",
 			"Properties": {
-				"Source": "http://www.google.com/humans.txt"
-			},
-			"Conditions": {
-				"Platform": "LIN",
-				"Architecture": "x64"
-			},
-			"Version": "1.0.0"
+				"Source": "http://www.google.com/humans.txt",
+				"Path": "TestData"
+			}
 		}
 	},
 	"Actions": {

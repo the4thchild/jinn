@@ -8,19 +8,15 @@
 	"Description": "File resource test",
 	"Resources": {
 	
-		"MyFle": {
+		"MyFile": {
+			"Version": "1.0.0.0",
 			"Type": "Jinn::Resource::Archive",
 			"Name": "The test file",
 			"Description": "File we need",
 			"Properties": {
 				"Source": "http://pkgs.fedoraproject.org/repo/pkgs/ldd-pdf/examples.tar.gz/330d478a64fea5f772645c3728a4e2df/examples.tar.gz",
-				"Path": "HerpyDerpy"
-			},
-			"Conditions": {
-				"Platform": "LIN",
-				"Architecture": "x64"
-			},
-			"Version": "1.0.0"
+				"Path": "TestData"
+			}
 		}
 	},
 	"Actions": {

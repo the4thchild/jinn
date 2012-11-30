@@ -1,18 +1,18 @@
 {
 	"Jinn": {
-		"AppName": "UpdateFileAddExample",
+		"AppName": "UpdateArchiveAddExample",
         "Version" : 1
     },
-	"Description": "Update test, adding a file",
+	"Description": "Update test, adding an archive",
 	"Resources": {
 	
-		"ExampleArchive": {
-			"Type": "Jinn::Resource::Archive",
-			"Name": "Archive",
-			"Description": "The archive",
+		"ExampleFile": {
+			"Type": "Jinn::Resource::File",
+			"Name": "Test File",
+			"Description": "A basic sample file",
 			"Properties": {
-				"Source": "http://pkgs.fedoraproject.org/repo/pkgs/ldd-pdf/examples.tar.gz/330d478a64fea5f772645c3728a4e2df/examples.tar.gz",
-				"Path": "Sample/Archive"
+				"Source": "http://www.google.com/humans.txt",
+				"Path": "Sample"
 			},
 			"Version": 1
 		}

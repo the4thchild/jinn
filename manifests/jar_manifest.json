@@ -12,7 +12,21 @@
             "Type": "Jinn::Resource::Jre",
             "Name": "My lovely JRE",
             "Properties": {
-                "Source": "https://s3.amazonaws.com/importio/jre/jre-7.5-linux-32.tar.gz",
+                "Source": {
+                    "Platform": {
+                        "LIN": {
+                            "x32": "https://s3.amazonaws.com/importio/jre/jre-7u9-lin-32.tar.gz",
+                            "x64": "https://s3.amazonaws.com/importio/jre/jre-7u9-lin-32.tar.gz"
+                        },
+                        "OSX": {
+                            "x64": "https://s3.amazonaws.com/importio/jre/jre-7u9-osx-64.tar.gz"
+                        },
+                        "WIN": {
+                            "x32": "https://s3.amazonaws.com/importio/jre/jre-7u9-win-32.tar.gz",
+                            "x64": "https://s3.amazonaws.com/importio/jre/jre-7u9-win-32.tar.gz"
+                        }
+                    }
+                },
                 "Path": "jre"
             },
             "Version": "1.0.0"
