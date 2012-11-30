@@ -2,6 +2,7 @@ import os
 import shutil
 import sys
 import g
+import distutils
 from feedback.LogLevels import LogLevels
 
 """
@@ -168,6 +169,18 @@ class FileSystemHelper(object):
             os.rename(frm, to)
             return True
         except:
+            g.feedback.log(LogLevels.ERROR, "Unable to rename %s to %s" % (frm, to))
+            return False
+        
+    """
+    Copies the contents of the frm directory to the to directory
+    """
+    def copyDir(self, frm, to):
+        try:
+            distutils.dir_util.copy_tree(to, frm)
+            return True
+        except:
+            g.feedback.log(LogLevels.ERROR, "Unable to copy directory from %s to %s" % (frm, to))
             return False
     
 # http://stackoverflow.com/questions/2656322/python-shutil-rmtree-fails-on-windows-with-access-is-denied

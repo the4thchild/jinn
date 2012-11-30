@@ -241,38 +241,69 @@ A Java installer"""
     def doCopy(self):
         g.feedback.log(LogLevels.DEBUG, "We are not in the correct directory, so installing to the correct location")
         
-        targetFile = self.getInstallTargetFile()
-        g.feedback.log(LogLevels.DEBUG, "Target file is %s" % targetFile)
-        d = self.getInstallTargetDirectory()
-        g.feedback.log(LogLevels.DEBUG, "Target directory is %s" % d)
-        if not self.exists(targetFile):
-            # Make the jinn install directory
-            if not self.makeDirectory(d):
-                g.feedback.log(LogLevels.ERROR, "Unable to make directory %s to install to" % d)
+        if self.os is OperatingSystem.OSX:
+            g.feedback.log(LogLevels.DEBUG, "Copying in OS X mode")
+            
+            targetDir = self.getInstallTargetDirectory()
+            currentDir = self.getCurrentDirectory()
+            
+            executable = targetDir + self.sep() + "Contents" + self.sep() + "MacOS" + self.sep() + self.getExecutableName()
+            
+            g.feedback.log(LogLevels.DEBUG, "Target executable: %s" % executable)
+            
+            if not self.exists(executable):
+                g.feedback.log(LogLevels.DEBUG, "Target executable does not exist, copying")
+                if not self.makeDirectory(targetDir):
+                    return False
+                if not self.copyDir(currentDir, targetDir):
+                    return False
+            else:
+                g.feedback.log(LogLevels.DEBUG, "Target executable exists, so running it")
+            
+            cmd = "." + targetDir + " -install"
+            g.feedback.log(LogLevels.DEBUG, "Executing command: %s" % cmd)
+            res = os.system(cmd)
+            if res < 1:
+                g.feedback.log(LogLevels.DEBUG, "Executed command successfully")
+                return 0
+            else:
+                g.feedback.log(LogLevels.ERROR, "Executing command %s failed with code %s" % (cmd, str(res)))
                 return 1
             
-            # Copy this binary into it
-            frm = self.getCurrentFile()
-            to = targetFile
-            g.feedback.log(LogLevels.DEBUG, "Copying from %s to %s" % (frm, to))
-            if not self.copyFile(frm, to):
-                g.feedback.log(LogLevels.ERROR, "Unable to copy %s to %s" % (frm,to))
+        else:
+            g.feedback.log(LogLevels.DEBUG, "Copying in Windows / Linux mode")
+            targetFile = self.getInstallTargetFile()
+            g.feedback.log(LogLevels.DEBUG, "Target file is %s" % targetFile)
+            d = self.getInstallTargetDirectory()
+            g.feedback.log(LogLevels.DEBUG, "Target directory is %s" % d)
+            if not self.exists(targetFile):
+                # Make the jinn install directory
+                if not self.makeDirectory(d):
+                    g.feedback.log(LogLevels.ERROR, "Unable to make directory %s to install to" % d)
+                    return 1
+                
+                # Copy this binary into it
+                frm = self.getCurrentFile()
+                to = targetFile
+                g.feedback.log(LogLevels.DEBUG, "Copying from %s to %s" % (frm, to))
+                if not self.copyFile(frm, to):
+                    g.feedback.log(LogLevels.ERROR, "Unable to copy %s to %s" % (frm,to))
+                    return 1
+            
+            # Change into that directory
+            g.feedback.log(LogLevels.DEBUG, "Changing to %s" % d)
+            if not self.changeDirectory(d):
+                g.feedback.log(LogLevels.ERROR, "Unable to change to the InstallTargetDirectory %s" % d)
                 return 1
-        
-        # Change into that directory
-        g.feedback.log(LogLevels.DEBUG, "Changing to %s" % d)
-        if not self.changeDirectory(d):
-            g.feedback.log(LogLevels.ERROR, "Unable to change to the InstallTargetDirectory %s" % d)
-            return 1
-        
-        # Run the new executable
-        g.feedback.log(LogLevels.DEBUG, "Code copied to %s, executing" % targetFile)
-        cmd = self.getExecutableName() + " -install"
-        if self.os == OperatingSystem.LIN or self.os == OperatingSystem.OSX:
-            cmd = "./" + cmd
-        g.feedback.log(LogLevels.DEBUG, "Run command: %s" % cmd)
-        os.system(cmd)
-        return 0
+            
+            # Run the new executable
+            g.feedback.log(LogLevels.DEBUG, "Code copied to %s, executing" % targetFile)
+            cmd = self.getExecutableName() + " -install"
+            if self.os == OperatingSystem.LIN or self.os == OperatingSystem.OSX:
+                cmd = "./" + cmd
+            g.feedback.log(LogLevels.DEBUG, "Run command: %s" % cmd)
+            os.system(cmd)
+            return 0
 
     """
     Runs an installation of this jinn
@@ -360,6 +391,8 @@ A Java installer"""
     def getInstallTargetDirectory(self):
         if self.isDevMode():
             return self.getCurrentDirectory()
+        elif self.os is OperatingSystem.OSX:
+            return self.getHomeDirectory() + self.sep() + "Applications" + self.sep() + self.manifest.jinn.name + ".app"
         else:
             return self.getHomeDirectory() + self.getDirectorySeparator() + self.manifest.jinn.name
 
@@ -369,8 +402,11 @@ A Java installer"""
     def getExecutableName(self):
         if self.os == OperatingSystem.WIN:
             return self.manifest.jinn.name + ".jinn.exe"
-        else:
+        elif self.os == OperatingSystem.LIN:
             return self.manifest.jinn.name + ".jinn"
+        elif self.os == OperatingSystem.OSX:
+            return "jinn"
+        return None
 
     """
     Get the file we wish to install to
