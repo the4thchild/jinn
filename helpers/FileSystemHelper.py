@@ -2,7 +2,6 @@ import os
 import shutil
 import sys
 import g
-import distutils
 from feedback.LogLevels import LogLevels
 
 """
@@ -177,7 +176,8 @@ class FileSystemHelper(object):
     """
     def copyDir(self, frm, to):
         try:
-            distutils.dir_util.copy_tree(to, frm)
+            self.delete(to)
+            shutil.copytree(frm, to)
             return True
         except Exception as e:
             g.feedback.log(LogLevels.ERROR, "Unable to copy directory from %s to %s: %s" % (frm, to, e))

@@ -245,7 +245,7 @@ A Java installer"""
             g.feedback.log(LogLevels.DEBUG, "Copying in OS X mode")
             
             targetDir = self.getInstallTargetDirectory()
-            currentDir = ".." + self.sep() + ".." + self.sep() + self.getCurrentDirectory()
+            currentDir = self.getCurrentDirectory() + self.sep() + ".." + self.sep() + ".."
             
             executable = targetDir + self.sep() + "Contents" + self.sep() + "MacOS" + self.sep() + self.getExecutableName()
             
