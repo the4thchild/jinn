@@ -1,4 +1,8 @@
+<<<<<<< HEAD
+manifest="manifests/import_manifest.json"
+=======
 manifest = "http://s3.amazonaws.com/importio/builder/import_manifest.json"
+>>>>>>> e822e4b2df3a361a85dadc16959a8306ed0f32a7
 # TODO: Get rid of this
 manifest_is_url = True
 # which feedback interface(cmd/ui) to use

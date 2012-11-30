@@ -88,7 +88,7 @@ MimeType=x-scheme-handler/%s
                 g.feedback.log(LogLevels.ERROR, "Exception playing with the registry, %s" % e)
                 return False
         elif self.os is OperatingSystem.OSX:
-            g.feedback.log(LogLevels.WARN, "OS X is not supported by %s for resource with ID %s. Instead, please use Jinn::Resource::InfoPlist. To remove this message, filter this resource to not be available on OS X." % (self.getType(). self.id))
+            g.feedback.log(LogLevels.WARN, "OS X is not supported by %s. Instead, please use Jinn::Resource::InfoPlist. To remove this message, filter this resource to not be available on OS X." % self.getType())
             return True
         
     def doUninstall(self):
@@ -123,5 +123,5 @@ MimeType=x-scheme-handler/%s
                 g.feedback.log(LogLevels.ERROR, "Exception playing with the registry, %s" % e)
                 return False
         elif self.os is OperatingSystem.OSX:
-            g.feedback.log(LogLevels.WARN, "OS X is not supported by %s for resource with ID %s. Instead, please use Jinn::Resource::InfoPlist. To remove this message, filter this resource to not be available on OS X." % (self.getType(). self.id))
+            g.feedback.log(LogLevels.WARN, "OS X is not supported by %s. Instead, please use Jinn::Resource::InfoPlist. To remove this message, filter this resource to not be available on OS X." % self.getType())
             return True

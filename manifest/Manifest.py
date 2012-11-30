@@ -30,8 +30,8 @@ class Manifest(FileSystemHelper):
     """
     def load(self, location, is_url, isInstalled):
         
-        g.feedback.log(LogLevels.DEBUG, "Loading from %s" % location)
-        g.feedback.log(LogLevels.DEBUG, "Is installed? %s" % str(isInstalled))
+        g.feedback.log(LogLevels.INFO, "Loading from %s" % location)
+        g.feedback.log(LogLevels.INFO, "Is already installed? %s" % str(isInstalled))
         
         # TODO: Fix this
         if is_url:
@@ -58,14 +58,14 @@ class Manifest(FileSystemHelper):
     Check the manifest version string is valid
     """
     def readVersionData(self):
-        g.feedback.log(LogLevels.DEBUG, "Reading version data")
+        g.feedback.log(LogLevels.INFO, "Reading version data")
         self.jinn = JinnVersion(self.data["Jinn"])
     
     """
     Load out the description
     """
     def readDescription(self):
-        g.feedback.log(LogLevels.DEBUG, "Reading description")
+        g.feedback.log(LogLevels.INFO, "Reading description")
         try:
             self.description = self.data["Description"]
         except KeyError:
@@ -77,7 +77,7 @@ class Manifest(FileSystemHelper):
     Load resources from the data
     """
     def loadResources(self, isInstalled):
-        g.feedback.log(LogLevels.DEBUG, "Loading resources")
+        g.feedback.log(LogLevels.INFO, "Loading resources")
         try:
             i = 0
             dataResources = self.data["Resources"]
@@ -101,7 +101,7 @@ class Manifest(FileSystemHelper):
     Load actions from the data
     """
     def loadActions(self):
-        g.feedback.log(LogLevels.DEBUG, "Loading actions")
+        g.feedback.log(LogLevels.INFO, "Loading actions")
         try:
             dataActions = self.data["Actions"]
             for k in dataActions.keys():
@@ -120,12 +120,12 @@ class Manifest(FileSystemHelper):
     Returns false if no default action
     """
     def runDefaultAction(self, args):
-        g.feedback.log(LogLevels.DEBUG, "Running default action")
+        g.feedback.log(LogLevels.INFO, "Running default action")
         for action in self.actions:
             if action.default:
                 g.feedback.log(LogLevels.DEBUG, "The default action run is %s" % action.id)
                 return action.run(args)
-        g.feedback.log(LogLevels.DEBUG, "No default action found")
+        g.feedback.log(LogLevels.INFO, "No default action found")
         return False
     
     """
@@ -143,7 +143,7 @@ class Manifest(FileSystemHelper):
     """
     def getManifestFile(self):
         mfile = ".jinn" + self.getDirectorySeparator() + "current_manifest.json"
-        g.feedback.log(LogLevels.DEBUG, "Manifest file is %s" % mfile)
+        g.feedback.log(LogLevels.INFO, "Manifest file is %s" % mfile)
         return mfile
 
     """
@@ -158,10 +158,10 @@ class Manifest(FileSystemHelper):
     Installs all of the resources
     """
     def installResources(self):
-        g.feedback.log(LogLevels.DEBUG, "Installing resources")
+        g.feedback.log(LogLevels.INFO, "Installing resources")
         for res in self.resources:
             if not res.doInstall():
-                g.feedback.log(LogLevels.DEBUG, "Failed to install resource with ID %s" % res.id)
+                g.feedback.log(LogLevels.ERROR, "Failed to install resource with ID %s" % res.id)
                 return False
         return True
     
@@ -174,7 +174,7 @@ class Manifest(FileSystemHelper):
             new_res = self.getResourceForId(old_res.id)
             if new_res is not None:
                 if new_res.version == old_res.version:
-                    g.feedback.log(LogLevels.DEBUG, "Updating installed status of %s to %s" % (new_res.id, str(old_res.isInstalled)))
+                    g.feedback.log(LogLevels.INFO, "Updating installed status of %s to %s" % (new_res.id, str(old_res.isInstalled)))
                     new_res.setInstalled(old_res.isInstalled)
         return True
     
@@ -187,7 +187,7 @@ class Manifest(FileSystemHelper):
             if old_resource is None:
                 g.feedback.log(LogLevels.DEBUG, "Resource with ID %s is new, so installing" % res.id)
                 if not res.doInstall():
-                    g.feedback.log(LogLevels.DEBUG, "Installing new resource with ID %s failed" % res.id)
+                    g.feedback.log(LogLevels.ERROR, "Installing new resource with ID %s failed" % res.id)
                     return False
         return True
     
@@ -200,7 +200,7 @@ class Manifest(FileSystemHelper):
             if new_resource is None:
                 g.feedback.log(LogLevels.DEBUG, "Resource with ID %s is removed, so uninstalling" % res.id)
                 if not res.doUninstall():
-                    g.feedback.log(LogLevels.DEBUG, "Uninstalling old resource with ID %s failed" % res.id)
+                    g.feedback.log(LogLevels.ERROR, "Uninstalling old resource with ID %s failed" % res.id)
                     return False
         return True
     
@@ -215,15 +215,15 @@ class Manifest(FileSystemHelper):
                 if new_res.version != old_res.version and new_res.isUpdatable(old_res):
                     g.feedback.log(LogLevels.DEBUG, "Resource with ID %s is changing version from %s to %s" % (new_res.id, old_res.version, new_res.version))
                     if not old_res.doUninstall():
-                        g.feedback.log(LogLevels.DEBUG, "Failed to uninstall updating resource with ID %s" % new_res.id)
+                        g.feedback.log(LogLevels.ERROR, "Failed to uninstall updating resource with ID %s" % new_res.id)
                         return False
                     # Install new one
                     if not new_res.doInstall():
-                        g.feedback.log(LogLevels.DEBUG, "Failed to install updating resource with ID %s" % new_res.id)
+                        g.feedback.log(LogLevels.ERROR, "Failed to install updating resource with ID %s" % new_res.id)
                         return False
                     # Install the dependents that were removed during the uninstall
                     if not new_res.installDependents():
-                        g.feedback.log(LogLevels.DEBUG, "Failed to install dependents of updating resource with ID %s" % new_res.id)
+                        g.feedback.log(LogLevels.ERROR, "Failed to install dependents of updating resource with ID %s" % new_res.id)
                         return False
         return True
     
@@ -234,7 +234,7 @@ class Manifest(FileSystemHelper):
         g.feedback.log(LogLevels.DEBUG, "Uninstalling all resources")
         for res in self.resources:
             if not res.doUninstall():
-                g.feedback.log(LogLevels.DEBUG, "Uninstalling resource with ID %s failed" % res.id)
+                g.feedback.log(LogLevels.ERROR, "Uninstalling resource with ID %s failed" % res.id)
                 return False
         return True
     

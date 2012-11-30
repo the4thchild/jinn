@@ -44,6 +44,9 @@ class NPAPIPluginResource(FileResource):
             else:
                 g.feedback.log(LogLevels.ERROR, "Calling regsvr failed, command was %s, result was %s" % (cmd, str(res)))
                 return False
+        elif self.os is OperatingSystem.OSX:
+            # For now
+            return True
             
     def doUninstall(self):
         if self.os is OperatingSystem.LIN:
@@ -61,4 +64,7 @@ class NPAPIPluginResource(FileResource):
                 return False
             if not self.delete(target):
                 return False
+            return True
+        elif self.os is OperatingSystem.OSX:
+            # For now
             return True
