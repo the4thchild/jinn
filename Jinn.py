@@ -245,7 +245,7 @@ A Java installer"""
             g.feedback.log(LogLevels.DEBUG, "Copying in OS X mode")
             
             targetDir = self.getInstallTargetDirectory()
-            copyTargetDir = targetDir + self.sep() + ".." + self.sep() + ".."
+            copyTargetDir = targetDir.rsplit("/", 2)[0]
             currentDir = self.getCurrentDirectory() + self.sep() + ".." + self.sep() + ".."
             
             executable = targetDir + self.sep() + self.getExecutableName()
